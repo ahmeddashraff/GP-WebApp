@@ -45,8 +45,10 @@
                             aria-haspopup="true" aria-expanded="false">
                             Profile
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="#">View</a>
+                        <div class="dropdown-menu nav-dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="#">View profile</a>
+                            <a class="dropdown-item" href="#">Settings</a>
+
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="#">Logout</a>
                         </div>
@@ -60,7 +62,7 @@
 
     <section id="in-progress">
         <div class="container">
-            <div class="d-flex justify-content-between mt-3">
+            <div class="d-flex justify-content-between mt-4">
                 <h4>In Progress Reports</h4>
                 <!-- Example single danger button -->
                 <div class="btn-group">
@@ -83,9 +85,12 @@
                 <div class="card">
                     <img class="card-img-top" src="./images/istockphoto-174662203-612x612.jpg" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                            additional content. This content is a little bit longer.</p>
+                        <h5 class="card-title">Report #1</h5>
+                        <p class="m-0">Status: <span class="">In progress</span></p>
+                        <p class="card-text">Severity: <span>4</span></p>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary">View</button>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">Last updated 3 mins ago</small>
@@ -94,9 +99,12 @@
                 <div class="card">
                     <img class="card-img-top" src="./images/istockphoto-174662203-612x612.jpg" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">This card has supporting text below as a natural lead-in to additional
-                            content.</p>
+                        <h5 class="card-title">Report #2</h5>
+                        <p class="m-0">Status: <span>In progress</span></p>
+                        <p class="card-text">Severity: <span>4</span></p>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary">View</button>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">Last updated 3 mins ago</small>
@@ -105,10 +113,12 @@
                 <div class="card">
                     <img class="card-img-top" src="./images/istockphoto-174662203-612x612.jpg" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                            additional content. This card has even longer content than the first to show that equal
-                            height action.</p>
+                        <h5 class="card-title">Report #3</h5>
+                        <p class="m-0">Status: <span>In progress</span></p>
+                        <p class="card-text">Severity: <span>4</span></p>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary">View</button>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">Last updated 3 mins ago</small>

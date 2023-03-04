@@ -2,6 +2,10 @@
     margin: 0;
     padding: 0;
 }
+body
+{
+    overflow: hidden;
+}
 nav div h3
 {
     position: absolute;
@@ -41,8 +45,16 @@ nav div h3
 nav
 {
     height: 60px;
+    box-shadow: rgba(0, 0, 0, 0.101) 0px 4px 12px;
+
 }
 nav .nav-item
 {
     margin-right: 10px;
+}
+
+nav .nav-dropdown-menu
+{
+    left:-35px !important;
+    min-width: 10px !important;
 }
