@@ -1,0 +1,40 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+nav div h3
+{
+    position: absolute;
+    top:80%;
+    left:50%;
+    transform: translateX(-41%);
+    font-size: 22px;
+}
+
+#registerAdminFooter img
+{
+    position: absolute;
+    bottom: 0%;
+    right: 50%;
+    transform: translateX(50%);
+
+}
+#registerAdmin input{
+    background-color: #F0EFFF;
+}
+#registerAdmin button{
+    background-color: #1E232C;
+    color: white;
+    box-shadow: rgba(0, 0, 0, 0.222) 0px 4px 12px;
+}
+#registerAdmin a{
+    text-decoration: none;
+    color: #B0B0B0;
+    font-size: 12px;
+}
+#registerAdmin{
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+}
