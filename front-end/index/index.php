@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $_POST){
 
     <nav class="text-center d-flex justify-content-left">
         <div class="position-relative">
-            <img width=150 height=120 src='../front-end/images/logo.png'>
+            <img width=150 height=120 src='../images/logo.png'>
             <h3>MyWay</h3>
         </div>
     </nav>
@@ -60,7 +60,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && $_POST){
     </section>
 
     <section id="footer">
-        <img width="600" height="250" src="../front-end/images/road-frontline-sodera-4.png">
+        <img width="600" height="250" src="../images/road-frontline-sodera-4.png">
     </section>
 
     <!-- Optional JavaScript -->
