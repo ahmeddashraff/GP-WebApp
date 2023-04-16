@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+
+Route::prefix('reports')->controller(ReportController::class)->group(function(){
+    Route::get('/','index');
+    Route::get('/show/{id}','show');
+    Route::post('/store','store');
+    Route::get('/edit/{id}','edit');
+    Route::put('/update/{id}','update');
+    Route::delete('/delete/{id}','delete');
 });
+
+

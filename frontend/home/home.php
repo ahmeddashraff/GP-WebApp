@@ -16,7 +16,7 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
 
         <div class="d-flex justify-content-between w-100">
             <a class="navbar-brand" href="#"> <img width=75 height=60 src='../images/logo.png'>
@@ -59,75 +59,94 @@
     </nav>
 
 
-
-    <section id="in-progress">
+    <section id="home" class="mt-5">
         <div class="container">
-            <div class="d-flex justify-content-between mt-4">
-                <h4>In Progress Reports</h4>
-                <!-- Example single danger button -->
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        Sort by
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Location</a>
-                        <a class="dropdown-item" href="#">Severity</a>
-                        <a class="dropdown-item" href="#">Latest</a>
-                        <a class="dropdown-item" href="#">Oldest</a>
+            <div class="d-flex justify-content-center row align-items-center">
+                <div class="col-md-6">
+                    <div class="stat-box bg-info">
+
                     </div>
+                    <div class="stat-box bg-warning">
+
+                    </div>
+                    <div class="stat-box bg-info">
+
+                    </div>
+                    <div class="stat-box bg-warning">
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div id="my_dataviz"></div>
                 </div>
             </div>
 
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-4">
+                    <div class="single-chart text-center">
+                        <h6>% of completed reports</h6>
+
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+
+                            <path class="circle-bg" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle run-animation" stroke-dasharray="30, 100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="51%" y="51%" class="percentage">30%</text>
+                            <text class="small-text" x="51%" y="60%">reports</text> </svg>
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="single-chart text-center">
+                        <h6>% of completed reports</h6>
+
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+
+                            <path class="circle-bg" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle run-animation" stroke-dasharray="30, 100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="51%" y="51%" class="percentage">30%</text>
+                            <text class="small-text" x="51%" y="60%">reports</text>
+                        </svg>
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="single-chart text-center">
+                        <h6>% of completed reports</h6>
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+
+                            <path class="circle-bg" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle run-animation" stroke-dasharray="30, 100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="51%" y="51%" class="percentage">30%</text>
+                            <text class="small-text" x="51%" y="60%">reports</text> </svg>
+                            <div class="additional-info d-flex justify-content-between">
+                            <p>incr. by <span><i class="fas fa-arrow-up"></i></span></p>
+                            <p>decr. by</p>
+
+                            </div>
+
+                    </div>
+                </div>
 
 
-            <div class="card-deck mt-2">
-                <div class="card">
-                    <img class="card-img-top" src="../images/istockphoto-174662203-612x612.jpg" alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="card-title">Report #1</h5>
-                        <p class="m-0">Status: <span class="">In progress</span></p>
-                        <p class="card-text">Severity: <span>4</span></p>
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-secondary">View</button>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Last updated 3 mins ago</small>
-                    </div>
-                </div>
-                <div class="card">
-                    <img class="card-img-top" src="../images/istockphoto-174662203-612x612.jpg" alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="card-title">Report #2</h5>
-                        <p class="m-0">Status: <span>In progress</span></p>
-                        <p class="card-text">Severity: <span>4</span></p>
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-secondary">View</button>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Last updated 3 mins ago</small>
-                    </div>
-                </div>
-                <div class="card">
-                    <img class="card-img-top" src="../images/istockphoto-174662203-612x612.jpg" alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="card-title">Report #3</h5>
-                        <p class="m-0">Status: <span>In progress</span></p>
-                        <p class="card-text">Severity: <span>4</span></p>
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-secondary">View</button>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Last updated 3 mins ago</small>
-                    </div>
-                </div>
             </div>
+
         </div>
 
     </section>
+
+
 
 
     <!-- Optional JavaScript -->
@@ -141,6 +160,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script src="./index.js"></script>
+
+
+
 </body>
 
 </html>
