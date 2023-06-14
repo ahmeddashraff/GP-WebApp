@@ -1,0 +1,14 @@
+APIS:
+	User:	
+		1- Register
+		2- Login
+		3- Send report
+		4- View All reports that have been sent (fel mobile app, kol ma el app ytfeteh w fe wifi available 
+		   hakhod el data w a7ottaha w a-save fel mobile 3shan y2dar yshof el reports mn 3'er wifi).		
+	
+	Admin:
+		1- create admins by Manager
+		2- delete admins by Manager
+		3- delete report
+		4- view all reports
+		5- view all reports by user id

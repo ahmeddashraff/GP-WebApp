@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Reports\StoreReportRequest;
-use App\Http\Requests\Reports\UpdateReportRequest;
+use App\Http\Requests\Admin\Reports\UpdateReportRequest;
 use App\Models\Report;
 use App\Services\HasMedia;
 use App\Traits\ApiResponses;
@@ -29,16 +29,16 @@ class ReportController extends Controller
     //     //
     // }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreReportRequest $request)
-    {
-        $imageName = HasMedia::upload($request->file('image'),public_path('images\reports'));
-        $data = $request->except('image');
-        $data['image'] = $imageName;
-        Report::create($data);
-        return $this->success("Report Created Successfully",201);    }
+    // /**
+    //  * Store a newly created resource in storage.
+    //  */
+    // public function store(StoreReportRequest $request)
+    // {
+    //     $imageName = HasMedia::upload($request->file('image'),public_path('images\reports'));
+    //     $data = $request->except('image');
+    //     $data['image'] = $imageName;
+    //     Report::create($data);
+    //     return $this->success("Report Created Successfully",201);    }
 
     /**
      * Display the specified resource.
