@@ -28,8 +28,9 @@ class RegisterRequest extends FormRequest
             'password'=>['required',Password::defaults(),'confirmed'],
             'password_confirmation'=>['required'],
             'phone_number'=>['required','unique:admins'],
-            'national_id'=>['required','unique:admins']
-
+            'national_id'=>['required','unique:admins'],
+            'role'=>['required','in:admin,manager'],
+            'department_loc'=>['required', 'in:cairo, alexabdria, mansoura'],
         ];
     }
 }

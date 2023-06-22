@@ -22,7 +22,9 @@ class RegisterController extends Controller
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
             'phone_number'=>$request->phone_number,
-            'national_id'=>$request->national_id
+            'national_id'=>$request->national_id,
+            'role'=>$request->role,
+            'department_loc'=>$request->department_loc
         ]);
         $token = 'Bearer '.  $admin->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
         $admin->token = $token;

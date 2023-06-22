@@ -1,0 +1,150 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+#reports .table-fixed tbody {
+    height: 300px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+#reports .table-fixed thead,
+.table-fixed tbody,
+.table-fixed tr,
+.table-fixed td,
+.table-fixed th {
+    display: block;
+}
+
+#reports .table-fixed tbody td,
+.table-fixed tbody th,
+.table-fixed thead > tr > th {
+    float: left;
+    position: relative;
+
+    &::after {
+        content: '';
+        clear: both;
+        display: block;
+    }
+}
+
+
+#reports {
+    /* background: #74ebd5;
+    background: -webkit-linear-gradient(to right, #74ebd5, #ACB6E5);
+    background: linear-gradient(to right, #74ebd5, #ACB6E5); */
+    min-height: 100vh;
+    
+}
+
+
+#reports .table-header
+{
+    background-color: #002e72b4;
+    color: aliceblue;
+}
+
+#reports .search
+{
+    margin-top: 8%;
+    margin-bottom: 1%;
+}
+
+#reports .search input{
+    border-radius: 10px;
+}
+#reports i
+{
+    cursor: pointer;
+    transition: color 0.2s ease-out;
+}
+
+#reports i:hover
+{
+    color: rgba(21, 77, 91, 0.785) !important;
+}
+/* ----------------------------------------- */
+#reports .popup .modal {
+position: fixed;
+z-index: 8;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgb(0, 0, 0);
+background-color: rgba(0, 0, 0, 0.4);
+}
+#reports .popup .modal-content {
+    margin: 100px auto;
+border: 1px solid #999;
+width: 60%;
+}
+#reports .popup h2,
+p {
+    margin: 0 0 20px;
+font-weight: 400;
+color: #999;
+}
+#reports .popup span {
+    color: #666;
+display: block;
+padding: 0 0 5px;
+}
+#reports .popup .popup-content {
+    padding: 25px;
+margin: 25px;
+}
+/* #reports .popup input,
+textarea {
+    width: 90%;
+padding: 10px;
+margin-bottom: 20px;
+border: 1px solid #1c87c9;
+outline: none;
+} */
+
+
+#reports .popup .close {
+    color: #aaa;
+float: right;
+margin-right: 10px;
+text-decoration: none;
+font-size: 28px;
+font-weight: bold;
+}
+#reports .popup .close:hover,
+.close:focus {
+    color: black;
+text-decoration: none;
+cursor: pointer;
+}
+#reports .popup button.button {
+    background: none;
+border-top: none;
+outline: none;
+border-right: none;
+border-left: none;
+border-bottom: #02274a 1px solid;
+padding: 0 0 3px 0;
+font-size: 16px;
+cursor: pointer;
+}
+#reports .popup button.button:hover {
+    border-bottom: #a99567 1px solid;
+color: #a99567;
+}
+
+#reports .popup img
+{
+    border: solid 0px transparent;
+    border-radius: 5px;
+}
+
+#reports .popup .info p strong 
+{
+    display: inline-block;
+    width:130px;
+    color: #424242;
+}

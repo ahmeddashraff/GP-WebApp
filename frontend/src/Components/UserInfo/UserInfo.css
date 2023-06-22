@@ -1,0 +1,115 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+#profile .info-box
+{
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+#profile .info-box .btn
+{
+    width: 120px;
+}
+
+#profile .user-reports .card 
+{
+    width: 33.33333333333%;
+    margin: 5px;
+}
+
+#points
+{
+    border: solid 1px rgba(0, 0, 0, 0.335); 
+    border-radius:5px ;
+}
+
+#profile .points-btn{
+    width: 130px;
+}
+/* ------------------------------------------------------- */
+#profile .popup .modal {
+    position: fixed;
+    z-index: 8;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    }
+    #profile .popup .modal-content {
+        margin: 100px auto;
+    border: 1px solid #999;
+    width: 60%;
+    }
+    #profile .popup h2,
+    p {
+        margin: 0 0 20px;
+    font-weight: 400;
+    color: #999;
+    }
+    #profile .popup span {
+        color: #666;
+    display: block;
+    padding: 0 0 5px;
+    }
+    #profile .popup .popup-content {
+        padding: 25px;
+    margin: 25px;
+    }
+    /* #profile .popup input,
+    textarea {
+        width: 90%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #1c87c9;
+    outline: none;
+    } */
+    
+    
+    #profile .popup .close {
+        color: #aaa;
+    float: right;
+    margin-right: 10px;
+    text-decoration: none;
+    font-size: 28px;
+    font-weight: bold;
+    }
+    #profile .popup .close:hover,
+    .close:focus {
+        color: black;
+    text-decoration: none;
+    cursor: pointer;
+    }
+    #profile .popup button.button {
+        background: none;
+    border-top: none;
+    outline: none;
+    border-right: none;
+    border-left: none;
+    border-bottom: #02274a 1px solid;
+    padding: 0 0 3px 0;
+    font-size: 16px;
+    cursor: pointer;
+    }
+    #profile .popup button.button:hover {
+        border-bottom: #a99567 1px solid;
+    color: #a99567;
+    }
+    
+    #profile .popup img
+    {
+        border: solid 0px transparent;
+        border-radius: 5px;
+    }
+    
+    #profile .popup .info p strong 
+    {
+        display: inline-block;
+        width:130px;
+        color: #424242;
+    }

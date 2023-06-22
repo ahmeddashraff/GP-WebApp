@@ -1,0 +1,33 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+nav div h3
+{
+    position: absolute;
+    top:80%;
+    left:50%;
+    transform: translateX(-41%);
+    font-size: 22px;
+}
+
+
+nav
+{
+    height: 60px;
+    box-shadow: rgba(0, 0, 0, 0.101) 0px 4px 12px;
+    background-color: white !important;
+    z-index: 3224;
+
+}
+nav .nav-item
+{
+    margin-right: 10px;
+}
+
+nav .dropdown-menu
+{
+    right:0 !important;
+    min-width: 10px !important;
+}

@@ -35,12 +35,6 @@ class LoginController extends Controller
         $request->user('sanctum')->currentAccessToken()->delete();
         return $this->success("Logout successfully from your current token");
     }
-    // public function logoutOther(Request $request)
-    // {
-    //     $tokenId = $this->getToken($request->header('old-token'));
-    //     $request->user('sanctum')->tokens()->where('id',$tokenId)->delete();
-    //     return $this->success("Logout successfully from {$tokenId} Token");
-    // }
 
     private function getToken(string $token)
     {
