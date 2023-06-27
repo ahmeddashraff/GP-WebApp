@@ -29,7 +29,10 @@ class RegisterRequest extends FormRequest
             'password_confirmation'=>['required'],
             'phone_number'=>['required','unique:users'],
             'national_id'=>['required','unique:users'],
-            'location'=>['required']
+            'location'=>['required'],
+            'gender'=>['required'],
+            'year_of_birth'=>['required'],
+
         ];
     }
 }

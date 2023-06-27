@@ -24,7 +24,8 @@ class RegisterController extends Controller
             'phone_number'=>$request->phone_number,
             'national_id'=>$request->national_id,
             'role'=>$request->role,
-            'department_loc'=>$request->department_loc
+            'department_loc'=>$request->department_loc,
+
         ]);
         $token = 'Bearer '.  $admin->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
         $admin->token = $token;

@@ -21,6 +21,37 @@ class ReportController extends Controller
         return $this->data(compact('reports'));
     }
 
+    public function markReportAsDone(string $id)
+    {
+
+        // Find the admin by ID
+        $report = Report::findOrFail($id);
+
+        // Update the report status
+        $report->status = 1;
+        $report->update();
+        if (!$report) {
+            return $this->error(['report' => ['No reports found by the given id']],"Not Found",404);
+        }
+        else if($report->status == 'done')
+        {
+            return $this->error(['report' => ['report is already marked as done']],"Invalid Attempt",401);
+        }
+        return $this->data(compact('report'));
+    }
+
+    public function getAllReportsByField(string $field)
+    {
+        if($field == 'emergency')
+        {
+            $reports = Report::where('type', 'fire')->get();
+            return $this->data(compact('reports'));
+        }
+        else
+        {
+            return $this->error(['report' => ['No reports found']],"Not Found",404);
+        }
+    }
     /**
      * Show the form for creating a new resource.
      */

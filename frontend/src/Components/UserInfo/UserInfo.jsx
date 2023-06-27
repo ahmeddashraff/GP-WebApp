@@ -12,6 +12,13 @@ const UserInfo = (props) => {
     const [displayModal, setDisplayModal] = useState(false);
     const [activeModalId, setActiveModalId] = useState(null);
     const [modalContent, setModalContent] = useState(null);
+    const [displayRestrictModal, setDisplayRestrictModal] = useState(false);
+
+    const [restricted, setRestricted] = useState(false);
+    const [banned, setBanned] = useState(false);
+
+    const [restrictLoading, setRestrictLoading] = useState(false);
+    const [banLoading, setBanLoading] = useState(false);
 
     const { userId } = useParams();
     let admin = JSON.parse(localStorage.getItem('admin'));
@@ -25,21 +32,26 @@ const UserInfo = (props) => {
         },
     };
 
-    const handleModalOpen = (modalId) => {
-        setActiveModalId(modalId);
-        const matchedReport = reports.find(report => ('modal' + report.id) === modalId);
-        if (matchedReport) {
-            setModalContent(matchedReport);
-            console.log('matched');
+    const handleModalOpen = (modalId, e) => {
+        console.log(e.target.id)
+        if (e.target.id === 'location-modal') {
+            setActiveModalId(modalId);
+            const matchedReport = reports.find(report => ('modal' + report.id) === modalId);
+            if (matchedReport) {
+                setModalContent(matchedReport);
+            }
+            setDisplayModal(true);
         }
-        console.log(modalContent);
-        setDisplayModal(true);
-        console.log('Modal opened', modalId);
+        else {
+            setActiveModalId(modalId);
+            setDisplayRestrictModal(true);
+        }
     };
 
     const handleModalClose = (event) => {
-        if (event.target.className === "modal" || event.target.className === "close") {
+        if (event.target.className === "modal" || event.target.className === "close" || event.target.className === "restrict-modal modal" || event.target.className === "restrict-close") {
             setDisplayModal(false);
+            setDisplayRestrictModal(false);
             setActiveModalId(null);
         }
 
@@ -47,6 +59,12 @@ const UserInfo = (props) => {
 
     async function getUser() {
         var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/users/show/${userId}`, config);
+        if (data.data.user.status == 0) {
+            setBanned(true);
+        }
+        else if (data.data.user.status == 2) {
+            setRestricted(true);
+        }
         setUser(data.data.user)
     }
 
@@ -55,10 +73,59 @@ const UserInfo = (props) => {
         setReports(data.data.reports)
     }
 
+    async function handleRestriction(event) {
+        event.preventDefault();
+        setRestrictLoading(true);
+        const selectedValue = event.target.elements.restriction_period.value;
+        let restrictionPeriod = { restriction_period: selectedValue }
+        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/restrict/${userId}`, restrictionPeriod, config);
+        setRestrictLoading(false);
+        const updatedUser = { ...user };
+        updatedUser.status = 2;
+        setUser(updatedUser);
+        setRestricted(true);
+        setBanned(false);
+    }
+    async function handleUnrestriction() {
+        setRestrictLoading(true);
+        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unrestrict/${userId}`, {}, config);
+        const updatedUser = { ...user };
+        setRestrictLoading(false);
+        updatedUser.status = 1;
+        setUser(updatedUser);
+        setRestricted(false);
+        setBanned(false);
+    }
+
+    async function handleBanning() {
+        setBanLoading(true);
+        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/ban/${userId}`, {}, config);
+        setBanLoading(false);
+        const updatedUser = { ...user };
+        updatedUser.status = 0;
+        setUser(updatedUser);
+        setBanned(true);
+        setRestricted(false);
+    }
+    async function handleUnbanning() {
+        setBanLoading(true);
+        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unban/${userId}`, {}, config);
+        setBanLoading(false);
+        const updatedUser = { ...user };
+        updatedUser.status = 1;
+        setUser(updatedUser);
+        setBanned(false);
+        setRestricted(false)
+    }
+
     useEffect(() => {
         getUser();
-        getUserReports()
+        getUserReports();
     }, []);
+
+    useEffect(()=>{
+        getUser();
+    }, [restricted])
 
     return (
         <section id="profile">
@@ -79,18 +146,42 @@ const UserInfo = (props) => {
                                             <p className="mb-0"><strong className="pr-1">National ID:</strong> {user.national_id}</p>
                                             <p className="mb-0"><strong className="pr-1">User phone:</strong> {user.phone_number}</p>
                                             <p className="mb-0"><strong className="pr-1">User email:</strong> {user.email}</p>
-                                            <p className="mb-0"><strong className="pr-1">Number of reports:</strong> 2</p>
-                                            <p className="mb-0"><strong className="pr-1">Number of restrictions:</strong> 4</p>
+                                            <p className="mb-0"><strong className="pr-1">Number of reports:</strong> {reports && reports.length}</p>
+                                            <p className="mb-0">
+                                                <strong className="pr-1">Status:</strong>
+                                                {restricted ? (
+                                                    <span className='text-warning'> restricted</span>
+                                                ) : banned ? (
+                                                    <span className='text-danger'> banned</span>
+                                                ) : (
+                                                    <span className='text-success'> active</span>
+                                                )}
+                                            </p>
+                                            {restricted && <><p className="mb-0"><strong className="pr-1">Restricted until:</strong><span> {user && user.restricted_until}</span></p>
+                                            </>}
                                             <p className="mb-0"><strong className="pr-1">Points:</strong> {user.points}</p>
 
 
                                             <div className='mt-2 d-flex justify-content-end'>
-                                                <button className="btn btn-warning text-light w-25 me-1 p-1">
-                                                    Restrict
-                                                </button>
-                                                <button className="btn btn-danger w-25 p-1">
-                                                    Ban
-                                                </button>
+                                                {banned ? (<button className="btn btn-danger w-25 p-1" onClick={handleUnbanning}>
+                                                    {banLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Unban'}
+                                                </button>)
+                                                    : restricted ? (<>
+                                                        <button onClick={handleUnrestriction} className="btn btn-warning text-light w-25 me-1 p-1 restrict-modal">
+                                                            {restrictLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Unrestrict'}
+                                                        </button>
+                                                        <button onClick={handleBanning} className="btn btn-danger w-25 p-1">
+                                                            {banLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Ban'}
+                                                        </button>
+                                                    </>
+                                                    ) : (<>
+                                                        <button onClick={(e) => handleModalOpen(user.id, e)} className="btn btn-warning text-light w-25 me-1 p-1 restrict-modal">
+                                                            {restrictLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Restrict'}
+                                                        </button>
+                                                        <button onClick={handleBanning} className="btn btn-danger w-25 p-1">
+                                                            {banLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Ban'}
+                                                        </button></>)
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -146,7 +237,7 @@ const UserInfo = (props) => {
                         <h3 className="mb-4"> User reports</h3>
                         <div className="card-deck mt-2 d-flex justify-content-center align-items-center text-start">
                             {reports && reports.map(report => (
-                                <div className="card">
+                                <div className="card shadow">
                                     <img className="card-img-top" src={report.image}
                                         alt="Card image cap" />
                                     <div className="card-body">
@@ -157,11 +248,18 @@ const UserInfo = (props) => {
                                         <p className="m-0"><strong>User Description:</strong></p>
                                         <p> {report.description}</p>
                                         <div className="d-flex justify-content-end">
-                                            <button className="btn btn-secondary" onClick={() => handleModalOpen('modal' + report.id)}>View Location</button>
+                                            <button className="btn btn-secondary " id='location-modal' onClick={(e) => handleModalOpen('modal' + report.id, e)}>View Location</button>
                                         </div>
                                     </div>
                                     <div className="card-footer">
-                                        <small className="text-muted">Created at {report.created_at}</small>
+                                        <small className="text-muted">Created at {new Date(report.created_at).toLocaleString("en-US", {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                        })}</small>
                                     </div>
                                 </div>
                             ))}
@@ -189,6 +287,33 @@ const UserInfo = (props) => {
                     </div>
                 </div >
                 }
+
+                {displayRestrictModal && <div className="restrictPopup">
+                    <div onClick={handleModalClose} className="restrict-modal modal" style={{ display: 'block' }}>
+                        <div className="modal-content">
+                            <div className="contact-form">
+                                <a onClick={handleModalClose} className="restrict-close">&times;</a>
+                                <div className="popup-content">
+                                    <p>restrict for:</p>
+                                    <form onSubmit={handleRestriction} className='d-flex justify-content-center align-items-center'>
+                                        <select name="restriction_period" className='form-select w-25 me-2'>
+                                            <option value="12 h">12 hours</option>
+                                            <option value="1 d">1 day</option>
+                                            <option value="7 d">1 week</option>
+                                            <option value="1 m">4 weeks</option>
+                                        </select>
+                                        <button className="btn btn-warning btn-md text-light">
+                                            {restrictLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Restrict'}
+                                        </button>
+                                    </form>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>}
+
             </>}
 
         </section>

@@ -1,17 +1,10 @@
-import React, { useEffect, useState } from "react";
-import '@fortawesome/fontawesome-free/css/all.css';
-import img from '../../images/istockphoto-174662203-612x612.jpg';
-
-// Import Font Awesome CSS
-
-import './Reports.css';
-import Modal from "./Modal";
-import axios from 'axios';
-
-// window.$ = window.jQuery = jQuery;
-
-
-const Reports = (props) => {
+import axios from "axios";
+import React from "react";
+import { useEffect } from "react";
+import { useState } from "react";
+import Modal from "../Reports/Modal";
+import './GovReports.css';
+const GovReports = (props) => {
 
     const [displayModal, setDisplayModal] = useState(false);
     const [activeModalId, setActiveModalId] = useState(null);
@@ -112,7 +105,7 @@ const Reports = (props) => {
         console.log(admin.token);
         setLoading(true);
 
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/reports/`, config);
+        var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/getAllReportsByField/${admin.field}`, config);
         if (data.success === true) {
             setReports(data.data.reports.reverse());
             setLoading(false);
@@ -133,7 +126,7 @@ const Reports = (props) => {
 
         setReports(sortedReports);
     };
-   
+
     useEffect(() => {
         performSearch();
     }, [searchQuery]);
@@ -149,10 +142,8 @@ const Reports = (props) => {
     }, [modalContent]);
 
     return (
-        // <div><h1>Reports</h1></div> 
-        <section id="reports">
+        <section id="GovReports">
             <div className="w-100">
-
                 <div className="row g-0">
                     <div className="col-lg-10 mx-auto">
                         <div className="d-flex justify-content-between align-items-center search">
@@ -179,46 +170,26 @@ const Reports = (props) => {
 
                                     </a>
                                     <div className="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                            <strong>Severity:</strong>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='1' />
-                                                <label for="severity" className="mb-0">Critical</label>
-                                            </div>
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='2' />
-                                                <label for="severity">Not critical</label>
-                                            </div>
+                                        <strong>Severity:</strong>
+                                        <div className="d-flex align-items-center mb-0">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='1' />
+                                            <label for="severity" className="mb-0">Critical</label>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='2' />
+                                            <label for="severity">Not critical</label>
+                                        </div>
 
+                                        <strong>Status:</strong>
+                                        <div className="d-flex align-items-center mb-0">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
+                                            <label for="status" className="mb-0">in progress</label>
+                                        </div>
 
-                                            <strong>Type:</strong>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='pothole' />
-                                                <label for="incident-type" className="mb-0">potholes</label>
-                                            </div>
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='floodings' />
-                                                <label for="incident-type">floodings</label>
-                                            </div>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='fire' />
-                                                <label for="incident-type" className="mb-0">fire and expl.</label>
-                                            </div>
-
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='fallen tree' />
-                                                <label for="incident-type">fallen trees</label>
-                                            </div>
-                                            
-                                            <strong>Status:</strong>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
-                                                <label for="status" className="mb-0">in progress</label>
-                                            </div>
-
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
-                                                <label for="status">done</label>
-                                            </div>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
+                                            <label for="status">done</label>
+                                        </div>
 
                                     </div>
                                 </div>
@@ -291,11 +262,11 @@ const Reports = (props) => {
 
                 </div>
                 {displayModal && (
-                    <Modal modalId={activeModalId} isGovUser={false} {...props} modalContent={modalContent} onClose={handleModalClose} />
+                    <Modal modalId={activeModalId} token={admin.token} isGovUser={true} {...props} modalContent={modalContent} onClose={handleModalClose} />
                 )}
-            </div>
+            </div>        
         </section>
     );
 }
 
-export default Reports;
+export default GovReports;

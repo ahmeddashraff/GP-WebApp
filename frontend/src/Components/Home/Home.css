@@ -1,17 +1,38 @@
 #home
-{}
+{
+	margin-top: 8% !important;
+}
 #home .stat-box
 {
-    width:65%;
+    width:90%;
     height: 100px;
     border-radius: 10px;
     margin-bottom: 10px;
     
 }
+#home .stat-box h2
+{
+	font-size: 40px;
+}
+#home .stat-box-upper
+{
+	background-color: #17a2b8;
+}
 
+#home .stat-box-middle
+{
+	background-color: #e8ae00;
+}
+#home .stat-box-lower
+{
+	background-color: #b83317;
+}
 #home .single-chart {
 	width: 200px;
 	margin: 24px auto;
+}
+#home .single-chart h6 {
+	width:240px;
 }
 
 #home .circle-bg {
@@ -27,8 +48,14 @@
 	stroke: #004C92;
 }
 
-#home .circle.run-animation {
-	animation: progress 1s ease-out forwards;
+#home .circle.run-animation-left {
+	animation: left_progress 1s ease-out forwards;
+}
+#home .circle.run-animation-middle {
+	animation: middle_progress 1s ease-out forwards;
+}
+#home .circle.run-animation-right {
+	animation: right_progress 1s ease-out forwards;
 }
 
 #home .percentage {
@@ -49,11 +76,11 @@
 
 }
 
-@keyframes progress {
+/* @keyframes progress1 {
 	0% {
 		stroke-dasharray: 0 100;
 	}
 	100% {
 		stroke-dasharray: 30 100;
 	}
-}
+} */

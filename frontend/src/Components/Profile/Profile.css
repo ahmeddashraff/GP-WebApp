@@ -1,0 +1,22 @@
+#Profile {
+    padding-left: 10%;
+    padding-right:10%;
+    margin-top: 10%;
+}
+
+#Profile .profile-avatar {
+    width: 200px;
+    margin: 0px auto;
+    border: 4px solid #f3f3f3;
+}
+#Profile .img-circle {
+    border-radius: 50%;
+}
+#Profile .bold
+{
+    width: 150px;
+}
+#Profile i
+{
+    width: 30px;
+}

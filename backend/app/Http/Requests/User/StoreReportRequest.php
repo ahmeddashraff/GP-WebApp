@@ -28,7 +28,9 @@ class StoreReportRequest extends FormRequest
             'admin_id'=>['nullable','integer','exists:admins,id'],
             'user_id'=>['nullable','integer','exists:users,id'],
             'gov_user_id'=>['nullable','integer','exists:government_users,id'],
-            'image'=>['required','mimes:png,jpg,jpeg','max:1024']
+            'image'=>['required','mimes:png,jpg,jpeg','max:1024'],
+            'type'=>['required']
+
         ];
     }
 }

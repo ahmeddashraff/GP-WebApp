@@ -23,7 +23,10 @@ class User extends Authenticatable
         'password',
         'national_id',
         'phone_number',
-        'location'
+        'location',
+        'gender',
+        'year_of_birth',
+        'restricted_until',
     ];
 
     /**

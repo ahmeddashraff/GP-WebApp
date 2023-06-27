@@ -1,15 +1,134 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./AdminControl.css";
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import Joi from "joi";
 const AdminControl = () => {
+
+    const history = useHistory();
+
 
     const [displayModal, setDisplayModal] = useState(false);
     const [activeModalId, setActiveModalId] = useState(null);
     const [modalContent, setModalContent] = useState(null);
 
+    let [modalLoading, setModalLoading] = useState(false);
+    let [adminsLoading, setAdminsLoading] = useState(false);
+    let [addAdminLoading, setAddAdminLoading] = useState(false);
 
+    let [errorList, setErrorList] = useState(null);
     let admin = JSON.parse(localStorage.getItem('admin'));
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+
+    const [editMode, setEditMode] = useState(false);
+
+
+
     const [admins, setAdmins] = useState(null);
+    const config = {
+        headers: {
+            Authorization: admin.token,
+            'Content-Type': 'application/json',
+        },
+    };
+
+    let [addedAdmin, setAddedAdmin] = useState({
+        email: ' ',
+        password: ' ',
+        full_name: ' ',
+        phone_number: ' ',
+        national_id: ' ',
+        role: 'admin',
+        password_confirmation: '',
+        department_loc: admin.department_loc
+    });
+
+
+    const [adminFilter, setAdminFilter] = useState({ status: [] });
+
+    const handleEditClick = () => {
+        setEditMode(true);
+    };
+
+    const handleChange = (e) => {
+        // Destructuring
+        const { value, checked } = e.target;
+        const { status } = adminFilter;
+
+        console.log(`${value} is ${checked}`);
+
+        // Case 1 : The user checks the box
+        if (checked) {
+            setAdminFilter({
+                status: [...status, value]
+            });
+        }
+
+        // Case 2  : The user unchecks the box
+        else {
+            setAdminFilter({
+                status: status.filter((e) => e !== value)
+            });
+        }
+    };
+    const performSearch = () => {
+        const query = searchQuery.toLowerCase();
+        const results = admins && admins.filter(
+            (admin) =>
+                admin.full_name.toLowerCase().includes(query) ||
+                admin.phone_number.toLowerCase().includes(query) ||
+                admin.email.toLowerCase().includes(query) ||
+                admin.national_id.toLowerCase().includes(query)
+        );
+        setSearchResults(results);
+    };
+
+    const handleSortChange = (event) => {
+        // console.log(searchQuery.)
+        const sortOption = event.target.value;
+        let sortedAdmins = [...admins];
+        console.log(sortOption);
+        if (sortOption === "newest to oldest") {
+            sortedAdmins = sortedAdmins.reverse();
+        }
+        if (sortOption === "oldest to newest") {
+            sortedAdmins = sortedAdmins.reverse();
+        }
+        setAdmins(sortedAdmins);
+    };
+
+    function getAddedAdmin(e) {
+        const name = e.target.name;
+        const value = e.target.value;
+
+        // Create a copy of addedAdmin
+        let updatedAddedAdmin = { ...addedAdmin };
+
+        // Check if the changed input is a name field
+        if (name === "first_name" || name === "middle_name" || name === "last_name") {
+            // Update the corresponding name field
+            updatedAddedAdmin[name] = value;
+
+            // Combine the name fields to update the full_name field
+            const firstName = name === "first_name" ? value : addedAdmin.first_name;
+            const middleName = name === "middle_name" ? value : addedAdmin.middle_name;
+            const lastName = name === "last_name" ? value : addedAdmin.last_name;
+            const combinedName = `${firstName} ${middleName} ${lastName}`;
+
+            // Update the full_name field
+            updatedAddedAdmin.full_name = combinedName;
+        } else {
+            // Update other fields
+            updatedAddedAdmin[name] = value;
+        }
+
+        console.log(updatedAddedAdmin)
+        // Update the state with the modified addedAdmin
+        setAddedAdmin(updatedAddedAdmin);
+    }
+
 
 
     const handleModalOpen = (modalId) => {
@@ -25,50 +144,152 @@ const AdminControl = () => {
     };
 
     const handleModalClose = (event) => {
+        console.log("inside close handler ", event)
         if (event.target.className === "modal" || event.target.className === "close") {
             setDisplayModal(false);
             setActiveModalId(null);
         }
-
     };
 
 
     async function getAdmins() {
-        const config = {
-            headers: {
-                Authorization: admin.token,
-                'Content-Type': 'application/json',
-            },
-        };
-        // console.log(admin.token);
+        setAdminsLoading(true);
         var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getAllAdminsInDepartment/${admin.department_loc}`, config);
-        setAdmins(data.data.admins)
+        if (data.success === true) {
+            setAdmins(data.data.admins.reverse())
+            setAdminsLoading(false);
+
+        }
+    }
+
+    async function updateStatus(id, status) {
+        const bodyRequest = { status: status };
+        setModalLoading(true);
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminStatus/${id}`, bodyRequest, config);
+        if (data.success === true) {
+            const updatedModalContent = { ...modalContent };
+            updatedModalContent.status = status;
+            setModalContent(updatedModalContent);
+            setModalLoading(false);
+            const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
+            if (adminIndex !== -1) {
+                const updatedAdmins = [...admins];
+                updatedAdmins[adminIndex] = data.data.admin;
+                setAdmins(updatedAdmins);
+            }
+        }
+    }
+
+    async function deleteAdmin(id) {
+        setModalLoading(true);
+
+        var { data } = await axios.delete(`http://127.0.0.1:8000/api/admins/delete/${id}`, config);
+        if (data.success === true) {
+            const updatedAdmins = admins.filter((admin) => admin.id !== id);
+            setAdmins(updatedAdmins);
+            setModalLoading(false);
+            setDisplayModal(false);
+            setActiveModalId(null);
+        }
+    }
+    async function formSubmit(e) {
+        e.preventDefault();
+        setAddAdminLoading(true);
+
+        try {
+            console.log(addedAdmin);
+            const { first_name, middle_name, last_name, ...addAdminRequest } = addedAdmin;
+            console.log(addAdminRequest);
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/register`, addAdminRequest, config);
+            console.log(data);
+            if (data.success === true) {
+                const updatedAdmins = [...admins, data.data.admin];
+                setAdmins(updatedAdmins);
+                setAddAdminLoading(false);
+            }
+            else {
+                setErrorList(data.errors)
+            }
+        } catch (error) {
+            setAddAdminLoading(false);
+            setErrorList(error.response.data.errors)
+            console.log("axios error:", error);
+        }
+    }
+
+    async function saveAdminInfo(modalContent) {
+        console.log(modalContent);
+        const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
+        setModalLoading(true);
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
+        if (data.success === true) {
+            // const updatedModalContent = { ...modalContent };
+            // updatedModalContent.status = status;
+            const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
+            if (adminIndex !== -1) {
+                const updatedAdmins = [...admins];
+                updatedAdmins[adminIndex] = data.data.admin;
+                setAdmins(updatedAdmins);
+            }
+            setModalContent(modalContent);
+            setModalLoading(false);
+        }
     }
 
     useEffect(() => {
+        performSearch();
+    }, [searchQuery]);
+
+
+    useEffect(() => {
         getAdmins();
+        console.log('search results', searchResults);
     }, []);
+
+    useEffect(() => {
+        console.log(errorList);
+    }, [errorList]);
 
     return (
         <section id="AdminControl">
             <div className="w-100">
-
                 <div className="row g-0">
                     <div className="col-lg-10 mx-auto">
                         <div className="d-flex justify-content-between align-items-center search">
-                            <input type="text" className="form-control w-25" placeholder="search for a report" />
-                            <div>
-                                <label className="me-1"><strong>Sort By:</strong> </label>
-                                <select name="sort">
+                            <input type="text" className="form-control w-25" placeholder="search for an admin" value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)} />
+                            <div className="d-flex justify-content-center align-items-center">
+                                <label className="me-1 w-50"><strong>Sort By:</strong> </label>
+                                <select name="sort" className="form-select form-select-sm" onChange={handleSortChange} >
                                     <option>newest to oldest</option>
                                     <option>oldest to newest</option>
                                 </select>
 
-                                <label className="me-1"><strong>Filter By</strong> </label>
-                                <select name="sort">
-                                    <option>newest to oldest</option>
-                                    <option>oldest to newest</option>
-                                </select>
+                                <div className="nav-item dropdown ms-2">
+                                    <a
+                                        className="nav-link dropdown-toggle"
+                                        href="#"
+                                        id="navbarDropdownMenuLink"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                    >
+                                        <strong>Filter By</strong>
+
+                                    </a>
+                                    <div className="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
+                                        <strong>Status:</strong>
+                                        <div className="d-flex align-items-center mb-0">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
+                                            <label for="status" className="mb-0">active</label>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
+                                            <label for="status">deactive</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div className="rounded shadow bg-white">
@@ -85,38 +306,317 @@ const AdminControl = () => {
                                             <th scope="col" className="col-2 table-header">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {admins && admins.map(admin => (
-                                            <tr key={admin.id}>
-                                                <th scope="row" className="col-1">{admin.id}</th>
-                                                <td className="col-3">{admin.full_name}</td>
-                                                <td className="col-2">{admin.phone_number}</td>
-                                                <td className="col-2">{admin.email}</td>
-                                                <td className="col-2">{admin.national_id}</td>
+                                    {adminsLoading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
+                                        <tbody>
+                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).filter((admin) => {
+                                                if (
+                                                    adminFilter.status.length > 0 &&
+                                                    !adminFilter.status.includes(admin.status.toString())
+                                                ) {
+                                                    return false;
+                                                }
+                                                return true;
+                                            }).map(admin => (
+                                                <>
+                                                    <tr key={admin.id}>
+                                                        <th scope="row" className="col-1">{admin.id}</th>
+                                                        <td className="col-3">{admin.full_name}</td>
+                                                        <td className="col-2">{admin.phone_number}</td>
+                                                        <td className="col-2">{admin.email}</td>
+                                                        <td className="col-2">{admin.national_id}</td>
 
-                                                <td className="col-2"><i onClick={() => handleModalOpen('modal' + admin.id)} data-modal={"modal" + admin.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
+                                                        <td className="col-2"><i onClick={() => handleModalOpen('modal' + admin.id)} data-modal={"modal" + admin.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
+                                                    </tr>
+                                                </>
+
+                                            ))}
+                                        </tbody>
+                                    }
+
                                 </table>
                             </div>
                         </div>
-                    </div>
 
+
+
+                        <div className="add-admin mt-5 mb-5">
+                            <h2>Do you want to add an admin?</h2>
+                            <div className="d-flex justify-content-center">
+                                <div className="mt-3 form-content w-100 rounded shadow bg-light">
+                                    <form className="mx-1 mx-md-4" onSubmit={formSubmit}>
+
+                                        <div className="d-flex flex-row align-items-center mb-4">
+                                            <i className="fas fa-user fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <div className="row d-flex ">
+                                                    <div className="col-md-4">
+                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter first name" name="first_name" className="form-control " />
+                                                    </div>
+
+                                                    <div className="col-md-4">
+                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter middle name" name="middle_name" className="form-control" />
+
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter last name" name="last_name" className="form-control" />
+                                                    </div>
+
+                                                </div>
+                                                {errorList && (errorList.full_name && <div className="error-alert">full name is required</div>)}
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex flex-row align-items-center mb-4">
+                                            <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <input onChange={getAddedAdmin} name="email" type="email" className="form-control" />
+                                                {errorList && (errorList.email && <div className="error-alert">{errorList.email[0]}</div>)}
+
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex flex-row align-items-center mb-4">
+                                            <i class="fa-solid fa-phone fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <input onChange={getAddedAdmin} name="phone_number" type="text" className="form-control" />
+                                                {errorList && (errorList.phone_number && <div className="error-alert">{errorList.phone_number[0]}</div>)}
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className="d-flex flex-row align-items-center mb-4">
+                                            <i className="fa-solid fa-id-card fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <input onChange={getAddedAdmin} name="national_id" type="text" className="form-control" />
+                                                {errorList && (errorList.national_id && <div className="error-alert">{errorList.national_id[0]}</div>)}
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className="d-flex flex-row align-items-center mb-4">
+                                            <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <input onChange={getAddedAdmin} name="password" type="password" className="form-control" />
+                                                {errorList &&
+                                                    (errorList.password &&
+                                                        <div className="error-alert">{errorList.password[0] === 'The password field format is invalid.' ?
+                                                            'The password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character from @$!%*?&'
+                                                            :
+                                                            errorList.password[0]}</div>)}
+
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex flex-row align-items-center mb-4">
+                                            <i className="fas fa-key fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <input onChange={getAddedAdmin} name="password_confirmation" type="password" className="form-control" />
+                                                {errorList && (errorList.password_confirmation && <div className="error-alert">{errorList.password_confirmation[0]}</div>)}
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                            <button type="submit" className="btn btn-primary btn-md">{addAdminLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Add Admin'}</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
                 </div>
                 {displayModal && <div className="popup">
                     <div id={activeModalId} onClick={handleModalClose} className="modal" style={{ display: 'block' }}>
                         <div className="modal-content">
                             <div className="contact-form">
                                 <a onClick={handleModalClose} className="close">&times;</a>
-                                <div className="popup-content">
-                                    <h3>type is {modalContent.full_name}</h3>
-                                </div>
+                                {modalLoading ? <i className='fas fa-spinner fa-spin'></i> :
+
+                                    <div className="popup-content">
+                                        <div className="card shadow-sm">
+                                            <div className="card-header bg-transparent border-0">
+                                                <h3 className="mb-0"><i className="far fa-clone pr-1"></i>Admin Information</h3>
+                                            </div>
+                                            <div className="card-body pt-0">
+                                                <table className="table table-bordered">
+                                                    <tr>
+                                                        <th width="30%">ID</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.id}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th width="30%">Full Name</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.full_name}</td>
+                                                    </tr>
+                                                    {editMode ? (
+                                                        <>
+                                                            <tr>
+                                                                <th width="30%">Phone Number</th>
+                                                                <td width="2%">:</td>
+                                                                <td>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control p-0 my-1 bg-light text-center"
+                                                                        value={modalContent.phone_number}
+                                                                        onChange={(e) =>
+                                                                            setModalContent({
+                                                                                ...modalContent,
+                                                                                phone_number: e.target.value,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th width="30%">Email</th>
+                                                                <td width="2%">:</td>
+                                                                <td>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control p-0 my-1 bg-light text-center"
+                                                                        value={modalContent.email}
+                                                                        onChange={(e) =>
+                                                                            setModalContent({
+                                                                                ...modalContent,
+                                                                                email: e.target.value,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <tr>
+                                                                <th width="30%">Phone Number</th>
+                                                                <td width="2%">:</td>
+                                                                <td>{modalContent.phone_number}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th width="30%">Email</th>
+                                                                <td width="2%">:</td>
+                                                                <td>{modalContent.email}</td>
+                                                            </tr>
+                                                        </>
+                                                    )}
+
+                                                    <tr>
+                                                        <th width="30%">National ID:</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.national_id}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th width="30%">Status:</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.status == 0 ? <strong className="text-danger p-0">deactivated</strong> : <strong className="p-0 text-success">active</strong>}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th width="30%">Employed at:</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.created_at && modalContent.created_at.split('T').slice(0, 1).join(' ')}</td>
+                                                    </tr>
+                                                    {editMode &&
+                                                        <tr>
+                                                            <th width="30%">Password:</th>
+                                                            <td width="2%">:</td>
+                                                            <td>
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control p-0 my-1 bg-light text-center"
+                                                                    
+                                                                    onChange={(e) =>{
+                                                                        setModalContent({
+                                                                            ...modalContent,
+                                                                            password: e.target.value,
+                                                                        });
+                                                                        console.log("inside password", modalContent);
+                                                                    }
+                                                                    }
+                                                                />
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                                <div>
+                                                    <h5><strong>Available Actions:</strong></h5>
+                                                    <div className="actions">
+                                                        <div className="d-flex justify-content-center align-items-center">
+
+                                                            {modalContent.status == 0 ?
+                                                                <>
+                                                                    <div className="text">User is deactivated, do you want to activate?</div>
+                                                                    <button className="btn btn-success w-25" name="status" onClick={() => { updateStatus(modalContent.id, 1) }}>activate</button></>
+                                                                :
+                                                                <>
+                                                                    <div className="text">User is activated, do you want to deactivate?</div>
+                                                                    <button name="status" onClick={() => { updateStatus(modalContent.id, 0) }} className="status btn btn-danger w-25">deactivate</button>
+                                                                </>}
+                                                        </div>
+                                                        <div className="mt-2 d-flex justify-content-center align-items-center">
+                                                            <div className="text">Do you want to delete the user?</div> <button name="deleteBtn" onClick={() => { deleteAdmin(modalContent.id); getAdmins(); }} className="btn btn-danger w-25">delete</button>
+                                                        </div>
+                                                        <div className="mt-2 d-flex justify-content-center align-items-center">
+                                                            {!editMode ? (
+                                                                <div className="text">Do you want to edit the user?</div>
+                                                            ) : <div className="text-end ">Do you want to save changes?</div>
+                                                            }
+                                                            {!editMode ? (
+                                                                <button
+                                                                    name="editBtn"
+                                                                    className="btn btn-secondary w-25"
+                                                                    onClick={handleEditClick}
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                            ) : (
+                                                                <div className="w-50 d-flex justify-content-center">
+                                                                    <div className="d-flex justify-content-center w-50">
+
+                                                                        <button
+                                                                            name="saveBtn"
+                                                                            className="btn btn-secondary w-50 me-2"
+                                                                            onClick={() => {
+                                                                                setEditMode(false);
+                                                                            }}
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                        <button
+                                                                            name="saveBtn"
+                                                                            className="btn btn-primary w-50"
+                                                                            onClick={() => {
+                                                                                // Save the updated admin info
+                                                                                saveAdminInfo(modalContent);
+                                                                                setEditMode(false);
+                                                                            }}
+                                                                        >
+                                                                            Save
+                                                                        </button>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
                 </div >
                 }
+
+
             </div>
         </section>);
 }

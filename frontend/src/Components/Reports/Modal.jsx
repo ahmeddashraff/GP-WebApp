@@ -1,12 +1,34 @@
 import React, { useState } from 'react';
 import img from '../../images/istockphoto-174662203-612x612.jpg';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 
 const Modal = (props) => {
+
+    let history = useHistory();
+    const [loading, setLoading] = useState(false);
+    const [isDone, setIsDone] = useState(props.modalContent.status == 1 ? true : false);
     const goToUserProfile = () => {
         const userId = props.modalContent.user_id;
-        props.history.push(`/UserInfo/${userId}`);
-      };
+        history.push(`/UserInfo/${userId}`);
+    };
+
+    async function markReportAsDone() {
+        const config = {
+            headers: {
+                Authorization: props.token,
+                'Content-Type': 'application/json',
+            },
+        };
+        setLoading(true);
+        var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/markReportAsDone/${props.modalContent.id}`, config);
+        if (data.success === true) {
+            setLoading(false);
+            setIsDone(true);
+        }
+    }
+
     return (
         <div className="popup">
 
@@ -25,13 +47,28 @@ const Modal = (props) => {
                                 <div className="info text-start pt-2">
                                     <p className="mb-1"><strong>Report ID:</strong> {props.modalContent.id}</p>
                                     <p className="mb-1"><strong>User ID:</strong> {props.modalContent.user_id}</p>
-                                    <p className="mb-1"><strong>Date:</strong> {props.modalContent.created_at}</p>
+                                    <p className="mb-1"><strong>Date:</strong> {new Date(props.modalContent.created_at).toLocaleString("en-US", {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                    })}</p>
                                     <p className="mb-1"><strong>Status:</strong> {props.modalContent.status == 0 ? 'In progress' : 'done'}</p>
-                                    <p className="mb-1"><strong>Severity:</strong> {props.modalContent.severity}</p>
+                                    <p className="mb-1"><strong>Severity:</strong> {props.modalContent.severity == 1 ? 'critical' : 'not critical'}</p>
                                     <p className="mb-1"><strong>Incident type:</strong> {props.modalContent.type}</p>
                                     <p className="mb-1"><strong>User Description:</strong></p>
                                     <p>{props.modalContent.description}</p>
-                                    <button className="btn btn-secondary mt-2" onClick={goToUserProfile}>View User Profile</button>
+                                    {props.isGovUser ? (isDone ?
+                                        <button className="btn btn-secondary mt-2" disabled>done</button>
+                                        :
+                                        <button className="btn btn-secondary mt-2" onClick={markReportAsDone}>
+                                            {loading ? <i className='fas fa-spinner fa-spin'></i> : 'Mark as done'}
+                                        </button>)
+                                        :
+                                        <button className="btn btn-secondary mt-2" onClick={goToUserProfile}>View User Profile</button>}
+
                                 </div>
                                 <img className="shadow mt-4" src={props.modalContent.image} alt="" width={'50%'} height={270} />
                             </div>

@@ -1,0 +1,80 @@
+#users .table-fixed tbody {
+    height: 300px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+#users .table-fixed thead,
+.table-fixed tbody,
+.table-fixed tr,
+.table-fixed td,
+.table-fixed th {
+    display: block;
+}
+
+#users .table-fixed tbody td,
+.table-fixed tbody th,
+.table-fixed thead > tr > th {
+    float: left;
+    position: relative;
+
+    &::after {
+        content: '';
+        clear: both;
+        display: block;
+    }
+}
+
+
+#users {
+
+    min-height: 100vh;
+    
+}
+
+
+#users .table-header
+{
+    background-color: #002e72b4;
+    color: aliceblue;
+}
+
+#users .search
+{
+    margin-top: 8%;
+    margin-bottom: 1%;
+}
+
+#users .search input{
+    border-radius: 10px;
+}
+#users i
+{
+    cursor: pointer;
+    transition: color 0.2s ease-out;
+}
+
+#users i:hover
+{
+    color: rgba(21, 77, 91, 0.785) !important;
+}
+
+#users .form-content
+{
+    background-color: #666;
+    padding: 2% 20%;
+}
+#users .error-alert
+{
+    color: rgb(174, 12, 12);
+}
+
+#users .go-to-profile
+{
+    cursor: pointer;
+    transition: color 0.2s ease-out;
+}
+#users .go-to-profile:hover
+{
+    color: #0a58ca;
+}

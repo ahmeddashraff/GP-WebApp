@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\Auth;
-use Illuminate\Validation\Rules\Password;
+namespace App\Http\Requests\GovernmentUser\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,13 +23,13 @@ class RegisterRequest extends FormRequest
     {
         return [
             'full_name'=>['required', 'regex:/^(\w+\s){2}\w+$/'],
-            'email'=>['required','email','unique:admins'],
+            'email'=>['required','email','unique:government_users'],
             'password'=>['required','confirmed','regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
             'password_confirmation'=>['required'],
-            'phone_number'=>['required','unique:admins','regex:/^(010|011|012|015)\d{8}$/'],
-            'national_id'=>['required','unique:admins','regex:/^[0-9]{14}$/'],
-            'role'=>['required','in:admin,manager'],
-            'department_loc'=>['required', 'in:cairo, alexandria, mansoura'],
+            'phone_number'=>['required','unique:government_users','regex:/^(010|011|012|015)\d{8}$/'],
+            'national_id'=>['required','unique:government_users','regex:/^[0-9]{14}$/'],
+            'field'=>['required','in:emergency,civil_defense'],
+            'department_loc'=>['required', 'in:cairo, alexabdria, mansoura'],
         ];
     }
 }

@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+        'web_additional' => [
+            'driver' => 'session',
+            'provider' => 'government_users', // New provider
+        ],
         'mobile' => [
             'driver' => 'session',
             'provider' => 'users',
@@ -73,10 +77,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'government_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\GovernmentUser::class,
+        ],
     ],
 
     /*

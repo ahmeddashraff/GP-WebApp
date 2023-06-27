@@ -29,16 +29,16 @@
     color: white;
     box-shadow: rgba(0, 0, 0, 0.222) 0px 4px 12px;
 }
-#login a{
-    text-decoration: none;
+#login .checkbox-label{
     color: #B0B0B0;
-    font-size: 12px;
+    font-size: 14px;
 }
 #login{
     display: flex;
     justify-content:space-around;
     align-items: center;
 }
+
 
 #login .error-alert
 {

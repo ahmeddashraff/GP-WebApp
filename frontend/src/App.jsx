@@ -12,29 +12,28 @@ import Home from './Components/Home/Home';
 import UserInfo from './Components/UserInfo/UserInfo';
 import Reports from './Components/Reports/Reports';
 import AdminControl from './Components/AdminControl/AdminControl';
+import Users from './Components/Users/Users';
+import Profile from './Components/Profile/Profile';
+import GovReports from './Components/GovReports/GovReports';
 
 function App() {
   let history = useHistory();
 
-  let [loginAdmin, setLoginAdmin] = useState(null);
+  // let [loginAdmin, setLoginAdmin] = useState(null);
 
 
-  function getAdminInfo() {
-    let admin = localStorage.getItem('admin');
-    setLoginAdmin(JSON.parse(admin));
-  }
+  // function getAdminInfo() {
+  //   let admin = localStorage.getItem('admin') || localStorage.getItem('gov_user');
+  //   setLoginAdmin(JSON.parse(admin));
+  // }
 
-  function logOut() {
-    localStorage.removeItem('admin');
-    setLoginAdmin(null);
-  }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (localStorage.getItem('admin')) {
-      getAdminInfo();
-    }
-  }, []);
+  //   if (localStorage.getItem('admin') || localStorage.getItem('gov_user') ) {
+  //     getAdminInfo();
+  //   }
+  // }, []);
 
 
 
@@ -44,9 +43,9 @@ function App() {
       <div className="App">
         <Switch>
 
-          <Route path='/SignIn' render={(props) => <SignIn {...props} onLogin={getAdminInfo} />} />
+          <Route path='/SignIn' render={(props) => <SignIn />} />
           <Route>
-            <Route render={(props) => <Navbar {...props} loginAdmin={loginAdmin} getAdminInfo={getAdminInfo} logOut={logOut} />} />
+            <Route render={() => <Navbar />} />
             <Switch>
               <Route path='/Home'>
                 <Home />
@@ -54,8 +53,12 @@ function App() {
               <Route path='/UserInfo/:userId'>
                 <UserInfo />
               </Route>
-              <Route path='/Reports' render={(props) => <Reports {...props} loginAdmin={loginAdmin} />} />
-              <Route path='/AdminControl' render={() => <AdminControl  loginAdmin={loginAdmin} />} />
+              <Route path='/Reports' render={(props) => <Reports  />} />
+              <Route path='/AdminControl' render={() => <AdminControl />} />
+              <Route path='/Users' render={() => <Users />} />
+              <Route path='/Profile' render={() => <Profile />} />
+              <Route path='/GovReports' render={() => <GovReports />} />
+
             </Switch>
           </Route>
         </Switch>

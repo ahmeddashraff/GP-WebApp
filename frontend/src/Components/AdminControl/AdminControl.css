@@ -62,6 +62,16 @@
 {
     color: rgba(21, 77, 91, 0.785) !important;
 }
+
+#AdminControl .form-content
+{
+    background-color: #666;
+    padding: 2% 20%;
+}
+#AdminControl .error-alert
+{
+    color: rgb(174, 12, 12);
+}
 /* ------------------------------------------------ */
 #AdminControl .popup .modal {
     position: fixed;
@@ -73,53 +83,53 @@
     overflow: auto;
     background-color: rgb(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.4);
-    }
-    #AdminControl .popup .modal-content {
-        margin: 100px auto;
+}
+#AdminControl .popup .modal-content {
+    margin: 100px auto;
     border: 1px solid #999;
     width: 60%;
-    }
-    #AdminControl .popup h2,
-    p {
-        margin: 0 0 20px;
+}
+#AdminControl .popup h2,
+p {
+    margin: 0 0 20px;
     font-weight: 400;
     color: #999;
-    }
-    #AdminControl .popup span {
-        color: #666;
+}
+#AdminControl .popup span {
+    color: #666;
     display: block;
     padding: 0 0 5px;
-    }
-    #AdminControl .popup .popup-content {
-        padding: 25px;
-    margin: 25px;
-    }
-    /* #AdminControl .popup input,
-    textarea {
-        width: 90%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #1c87c9;
-    outline: none;
-    } */
-    
-    
-    #AdminControl .popup .close {
-        color: #aaa;
+}
+#AdminControl .popup .popup-content {
+    padding: 25px;
+    margin: 25px;   
+}
+/* #AdminControl .popup input,
+textarea {
+    width: 90%;
+padding: 10px;
+margin-bottom: 20px;
+border: 1px solid #1c87c9;
+outline: none;
+} */
+
+
+#AdminControl .popup .close {
+    color: #aaa;
     float: right;
     margin-right: 10px;
     text-decoration: none;
     font-size: 28px;
     font-weight: bold;
-    }
-    #AdminControl .popup .close:hover,
-    .close:focus {
-        color: black;
+}
+#AdminControl .popup .close:hover,
+.close:focus {
+    color: black;
     text-decoration: none;
     cursor: pointer;
-    }
-    #AdminControl .popup button.button {
-        background: none;
+}
+#AdminControl .popup button.button {
+    background: none;
     border-top: none;
     outline: none;
     border-right: none;
@@ -128,21 +138,30 @@
     padding: 0 0 3px 0;
     font-size: 16px;
     cursor: pointer;
-    }
-    #AdminControl .popup button.button:hover {
-        border-bottom: #a99567 1px solid;
+}
+#AdminControl .popup button.button:hover {
+    border-bottom: #a99567 1px solid;
     color: #a99567;
-    }
-    
-    #AdminControl .popup img
-    {
-        border: solid 0px transparent;
-        border-radius: 5px;
-    }
-    
-    #AdminControl .popup .info p strong 
-    {
-        display: inline-block;
-        width:130px;
-        color: #424242;
-    }
+}
+
+#AdminControl .popup img
+{
+    border: solid 0px transparent;
+    border-radius: 5px;
+}
+
+#AdminControl .popup .info p strong 
+{
+    display: inline-block;
+    width:130px;
+    color: #424242;
+}
+
+#AdminControl .popup .actions .text
+{
+    width: 350px;
+}
+
+#AdminControl .popup .fa-spinner{
+    font-size:50px ;
+}

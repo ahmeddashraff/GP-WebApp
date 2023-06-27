@@ -23,7 +23,9 @@ class RegisterController extends Controller
             'password'=>Hash::make($request->password),
             'phone_number'=>$request->phone_number,
             'national_id'=>$request->national_id,
-            'location'=>$request->location
+            'location'=>$request->location,
+            'gender'=>$request->gender,
+            'year_of_birth'=>$request->year_of_birth
         ]);
         $token = 'Bearer '.  $user->createToken("Ahmed's iPhone" . '-' . "ios")->plainTextToken;
         $user->token = $token;
