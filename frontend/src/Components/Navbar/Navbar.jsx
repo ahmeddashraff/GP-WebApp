@@ -58,7 +58,10 @@ const Navbar = (props) => {
                             {admin.role == 'manager' && <li className="nav-item">
                                 <NavLink className="nav-link" to="/AdminControl">Admin Control</NavLink>
                             </li>
-                            }</>
+                            }
+                            <li className="nav-item">
+                                <NavLink className="nav-link" to="/GovUserControl">Gov User Control</NavLink>
+                            </li></>
                         }
                         <li className="nav-item dropdown">
                             <a

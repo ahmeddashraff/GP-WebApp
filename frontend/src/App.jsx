@@ -15,6 +15,7 @@ import AdminControl from './Components/AdminControl/AdminControl';
 import Users from './Components/Users/Users';
 import Profile from './Components/Profile/Profile';
 import GovReports from './Components/GovReports/GovReports';
+import GovUserControl from './Components/GovUserControl/GovUserControl';
 
 function App() {
   let history = useHistory();
@@ -58,7 +59,7 @@ function App() {
               <Route path='/Users' render={() => <Users />} />
               <Route path='/Profile' render={() => <Profile />} />
               <Route path='/GovReports' render={() => <GovReports />} />
-
+              <Route path='/GovUserControl' render={() => <GovUserControl />} />
             </Switch>
           </Route>
         </Switch>

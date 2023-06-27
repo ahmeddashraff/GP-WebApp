@@ -1,10 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import "./AdminControl.css";
+import { useEffect, useState, React } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
-import Joi from "joi";
-const AdminControl = () => {
 
+const GovUserControl = () => {
     const history = useHistory();
 
 
@@ -24,7 +22,11 @@ const AdminControl = () => {
 
     const [editMode, setEditMode] = useState(false);
 
+    const [selectedValue, setSelectedValue] = useState('emergency');
 
+    // const handleSelectChange = (event) => {
+    //     setSelectedValue(event.target.value);
+    //   };
 
     const [admins, setAdmins] = useState(null);
     const config = {
@@ -34,13 +36,14 @@ const AdminControl = () => {
         },
     };
 
+    
     let [addedAdmin, setAddedAdmin] = useState({
-        email: ' ',
-        password: ' ',
-        full_name: ' ',
-        phone_number: ' ',
-        national_id: ' ',
-        role: 'admin',
+        email: '',
+        password: '',
+        full_name: '',
+        phone_number: '',
+        national_id: '',
+        field: 'emergency',
         password_confirmation: '',
         department_loc: admin.department_loc
     });
@@ -124,7 +127,7 @@ const AdminControl = () => {
             updatedAddedAdmin[name] = value;
         }
 
-        console.log(updatedAddedAdmin)
+        console.log('updated admin', updatedAddedAdmin)
         // Update the state with the modified addedAdmin
         setAddedAdmin(updatedAddedAdmin);
     }
@@ -154,9 +157,10 @@ const AdminControl = () => {
 
     async function getAdmins() {
         setAdminsLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getAllAdminsInDepartment/${admin.department_loc}`, config);
+        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/GovUsers/getAllGovernmentUsersInDepartment/${admin.department_loc}`, config);
         if (data.success === true) {
-            setAdmins(data.data.admins.reverse())
+            console.log(data.data);
+            setAdmins(data.data.government_users.reverse())
             setAdminsLoading(false);
 
         }
@@ -165,7 +169,7 @@ const AdminControl = () => {
     async function updateStatus(id, status) {
         const bodyRequest = { status: status };
         setModalLoading(true);
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminStatus/${id}`, bodyRequest, config);
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserStatus/${id}`, bodyRequest, config);
         if (data.success === true) {
             const updatedModalContent = { ...modalContent };
             updatedModalContent.status = status;
@@ -174,7 +178,9 @@ const AdminControl = () => {
             const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
             if (adminIndex !== -1) {
                 const updatedAdmins = [...admins];
-                updatedAdmins[adminIndex] = data.data.admin;
+                console.log("inside update status",data );
+                console.log("inside update status",data.data.government_user );
+                updatedAdmins[adminIndex] = data.data.government_user;
                 setAdmins(updatedAdmins);
             }
         }
@@ -183,7 +189,7 @@ const AdminControl = () => {
     async function deleteAdmin(id) {
         setModalLoading(true);
 
-        var { data } = await axios.delete(`http://127.0.0.1:8000/api/admins/delete/${id}`, config);
+        var { data } = await axios.delete(`http://127.0.0.1:8000/api/admins/GovUsers/delete/${id}`, config);
         if (data.success === true) {
             const updatedAdmins = admins.filter((admin) => admin.id !== id);
             setAdmins(updatedAdmins);
@@ -200,11 +206,11 @@ const AdminControl = () => {
             console.log(addedAdmin);
             const { first_name, middle_name, last_name, ...addAdminRequest } = addedAdmin;
             console.log(addAdminRequest);
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/register`, addAdminRequest, config);
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/GovUsers/addGovernmentUser`, addAdminRequest, config);
             console.log(data);
             if (data.success === true) {
-                const updatedAdmins = [...admins, data.data.admin];
-                setAdmins(updatedAdmins);
+                const updatedAdmins = [...admins, data.data.government_user];
+                setAdmins(updatedAdmins.reverse());
                 setAddAdminLoading(false);
             }
             else {
@@ -221,14 +227,14 @@ const AdminControl = () => {
         console.log(modalContent);
         const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
         setModalLoading(true);
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserInfo/${modalContent.id}`, bodyRequest, config);
         if (data.success === true) {
             // const updatedModalContent = { ...modalContent };
             // updatedModalContent.status = status;
             const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
             if (adminIndex !== -1) {
                 const updatedAdmins = [...admins];
-                updatedAdmins[adminIndex] = data.data.admin;
+                updatedAdmins[adminIndex] = data.data.government_user;
                 setAdmins(updatedAdmins);
             }
             setModalContent(modalContent);
@@ -256,7 +262,7 @@ const AdminControl = () => {
                 <div className="row g-0">
                     <div className="col-lg-10 mx-auto">
                         <div className="d-flex justify-content-between align-items-center search">
-                            <input type="text" className="form-control w-25" placeholder="search for an admin" value={searchQuery}
+                            <input type="text" className="form-control w-25" placeholder="search for a government user" value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)} />
                             <div className="d-flex justify-content-center align-items-center">
                                 <label className="me-1 w-50"><strong>Sort By:</strong> </label>
@@ -286,7 +292,7 @@ const AdminControl = () => {
                                         </div>
                                         <div className="d-flex align-items-center">
                                             <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
-                                            <label for="status">deactive</label>
+                                            <label for="status">inactive</label>
                                         </div>
                                     </div>
                                 </div> */}
@@ -311,8 +317,7 @@ const AdminControl = () => {
                                             {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).filter((admin) => {
                                                 if (
                                                     adminFilter.status.length > 0 &&
-                                                    !adminFilter.status.includes(
-                                                        admin.status.toString())
+                                                    !adminFilter.status.includes(admin.status.toString())
                                                 ) {
                                                     return false;
                                                 }
@@ -341,7 +346,7 @@ const AdminControl = () => {
 
 
                         <div className="add-admin mt-5 mb-5">
-                            <h2>Do you want to add an admin?</h2>
+                            <h2>Do you want to add a government user?</h2>
                             <div className="d-flex justify-content-center">
                                 <div className="mt-3 form-content w-100 rounded shadow bg-light">
                                     <form className="mx-1 mx-md-4" onSubmit={formSubmit}>
@@ -397,6 +402,16 @@ const AdminControl = () => {
                                         </div>
 
                                         <div className="d-flex flex-row align-items-center mb-4">
+                                            <i class="fa-solid fa-people-group fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <select  onChange={getAddedAdmin} name="field" className="form-select">
+                                                    <option value="emergency">emergency</option>
+                                                    <option value="civil_defense">civil defense</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="d-flex flex-row align-items-center mb-4">
                                             <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
                                             <div className="form-outline flex-fill mb-0">
                                                 <input onChange={getAddedAdmin} name="password" type="password" className="form-control" />
@@ -419,7 +434,7 @@ const AdminControl = () => {
                                         </div>
 
                                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                            <button type="submit" className="btn btn-primary btn-md">{addAdminLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Add Admin'}</button>
+                                            <button type="submit" className="btn btn-primary btn-md">{addAdminLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Add Gov User'}</button>
                                         </div>
 
                                     </form>
@@ -530,8 +545,8 @@ const AdminControl = () => {
                                                                 <input
                                                                     type="text"
                                                                     className="form-control p-0 my-1 bg-light text-center"
-                                                                    
-                                                                    onChange={(e) =>{
+
+                                                                    onChange={(e) => {
                                                                         setModalContent({
                                                                             ...modalContent,
                                                                             password: e.target.value,
@@ -622,4 +637,4 @@ const AdminControl = () => {
         </section>);
 }
 
-export default AdminControl;
+export default GovUserControl;

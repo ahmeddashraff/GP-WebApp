@@ -104,27 +104,36 @@ const GovReports = (props) => {
         };
         console.log(admin.token);
         setLoading(true);
-
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/getAllReportsByField/${admin.field}`, config);
-        if (data.success === true) {
-            setReports(data.data.reports.reverse());
-            setLoading(false);
+        try {
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/getAllReportsByField/${admin.field}`, config);
+            if (data.success === true) {
+                setReports(data.data.reports.reverse());
+                setLoading(false);
+            }
         }
+        catch (error) {
+            setLoading(false);
+            console.log("axios", error);
+        }
+
     }
 
     const handleSortChange = (event) => {
         // console.log(searchQuery.)
         const sortOption = event.target.value;
-        let sortedReports = [...reports];
-        console.log(sortOption);
-        if (sortOption === "newest to oldest") {
-            sortedReports = sortedReports.reverse();
-        }
-        if (sortOption === "oldest to newest") {
-            sortedReports = sortedReports.reverse();
+        if (reports) {
+            let sortedReports = [...reports];
+            console.log(sortOption);
+            if (sortOption === "newest to oldest") {
+                sortedReports = sortedReports.reverse();
+            }
+            if (sortOption === "oldest to newest") {
+                sortedReports = sortedReports.reverse();
+            }
+
+            setReports(sortedReports);
         }
 
-        setReports(sortedReports);
     };
 
     useEffect(() => {
@@ -264,7 +273,7 @@ const GovReports = (props) => {
                 {displayModal && (
                     <Modal modalId={activeModalId} token={admin.token} isGovUser={true} {...props} modalContent={modalContent} onClose={handleModalClose} />
                 )}
-            </div>        
+            </div>
         </section>
     );
 }

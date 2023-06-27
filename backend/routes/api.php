@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\Auth\LoginController;
+use App\Http\Controllers\Admin\GovernmentUserController;
 use App\Http\Controllers\Admin\StatisticsController;
 use App\Http\Controllers\User\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\User\Auth\RegisterController as UserRegisterController;
@@ -32,7 +33,6 @@ use App\Http\Controllers\UserController;
 
 Route::prefix('GovUsers')->group(function(){
     Route::post('login',[GovernmentUserLoginController::class,'login']);
-    Route::post('register',GovernmentUserRegisterController::class);
     Route::middleware('auth:sanctum')->group(function(){
         Route::prefix('reports')->controller(ReportController::class)->group(function(){
             Route::get('/getAllReportsByField/{field}','getAllReportsByField');
@@ -44,7 +44,6 @@ Route::prefix('GovUsers')->group(function(){
 });
 
 Route::prefix('admins')->group(function(){
-    Route::post('register',RegisterController::class);
     Route::post('login',[LoginController::class,'login']);
     Route::middleware('auth:sanctum')->group(function(){
         Route::prefix('reports')->controller(ReportController::class)->group(function(){
@@ -63,9 +62,17 @@ Route::prefix('admins')->group(function(){
             Route::post('/ban/{id}','ban');
             Route::post('/unban/{id}','unban');
         });
+        Route::prefix('GovUsers')->controller(GovernmentUserController::class)->group(function(){
+            Route::post('/addGovernmentUser','addGovernmentUser');
+            Route::get('/getAllGovernmentUsersInDepartment/{location}','getAllGovernmentUsersInDepartment');
+            Route::put('/updateGovernmentUserStatus/{id}','updateGovernmentUserStatus');
+            Route::put('/updateGovernmentUserInfo/{id}','updateGovernmentUserInfo');
+            Route::delete('/delete/{id}','delete');
+        });
         Route::get('/getAllAdminsInDepartment/{location}',[AdminController::class,'getAllAdminsInDepartment']);
         Route::put('/updateAdminStatus/{id}',[AdminController::class,'updateAdminStatus']);
         Route::put('/updateAdminInfo/{id}',[AdminController::class,'updateAdminInfo']);
+        Route::post('register',RegisterController::class);
         Route::delete('/delete/{id}',[AdminController::class,'delete']);
         Route::get('statistics',StatisticsController::class);
         Route::post('logout-current',[LoginController::class,'logoutCurrent']);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './Home.css';
 import CountUp from 'react-countup';
 import axios from 'axios';
+import { NavLink, useHistory } from 'react-router-dom/cjs/react-router-dom';
 
 const Home = () => {
 
@@ -106,15 +107,14 @@ const Home = () => {
                                         <div className="card-body">
                                             <h5 className="card-title">Add admin</h5>
                                             <p className="card-text">
-                                                Some quick example text to build on the card title and make up the bulk of the card's
-                                                content.
+                                                Go to Admin Control to add an admin
                                             </p>
-                                            <a href="#" className="card-link">Card link</a>
+                                            <NavLink to="/AdminControl" clNavLinkssName="card-link">Admin Control</NavLink>
                                         </div>
                                     </div>
                                     <div className="card">
                                         <div className="card-body">
-                                            <h5 className="card-title mb-3">Delete a user</h5>
+                                            <h5 className="card-title mb-3">search for a user</h5>
 
                                             <div>
                                                 <form action="#.html">
@@ -122,7 +122,7 @@ const Home = () => {
                                                         <input type="search" className="form-control form-control mb-3 me-2" placeholder="user id" />
                                                         <div className="input-group-append ">
                                                             <button type="submit" className="btn btn-danger mb-3">
-                                                                <i className="fa fa-trash"></i>
+                                                                <i className="fa fa-search"></i>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -136,12 +136,12 @@ const Home = () => {
                                 <div className="col-lg-6">
                                     <div className="card mb-3">
                                         <div className="card-body">
-                                            <h5 className="card-title">Add user</h5>
+                                            <h5 className="card-title">Add gov user</h5>
                                             <p className="card-text">
-                                                Some quick example text to build on the card title and make up the bulk of the card's
-                                                content.
+                                                Go to Gov User Control to add a government user
+
                                             </p>
-                                            <a href="#" className="card-link">Card link</a>
+                                            <NavLink to="/GovUserControl" clNavLinkssName="card-link">Gov User Control</NavLink>
                                         </div>
                                     </div>
                                     <div className="card">
