@@ -24,12 +24,6 @@ class LoginController extends Controller
         return $this->data(compact('admin'));
     }
 
-    // public function logoutAll(Request $request)
-    // {
-    //     $request->user('sanctum')->tokens()->delete();
-    //     return $this->success("Logout successfully from all device");
-    // }
-
     public function logoutCurrent(Request $request)
     {
         $request->user('sanctum')->currentAccessToken()->delete();

@@ -1,19 +1,13 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\GovernmentUserController;
+use App\Http\Controllers\User\Auth\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\Auth\RegisterController;
-use App\Http\Controllers\Admin\Auth\LoginController;
-use App\Http\Controllers\Admin\GovernmentUserController;
-use App\Http\Controllers\Admin\StatisticsController;
-use App\Http\Controllers\User\Auth\LoginController as UserLoginController;
-use App\Http\Controllers\User\Auth\RegisterController as UserRegisterController;
-use App\Http\Controllers\GovernmentUser\Auth\LoginController as GovernmentUserLoginController;
-use App\Http\Controllers\GovernmentUser\Auth\RegisterController as GovernmentUserRegisterController;
-use App\Http\Controllers\User\Auth\VerificationController;
-use App\Http\Controllers\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -32,19 +26,18 @@ use App\Http\Controllers\UserController;
 
 
 Route::prefix('GovUsers')->group(function(){
-    Route::post('login',[GovernmentUserLoginController::class,'login']);
+    Route::post('login',[GovernmentUserController::class,'login']);
     Route::middleware('auth:sanctum')->group(function(){
         Route::prefix('reports')->controller(ReportController::class)->group(function(){
             Route::get('/getAllReportsByField/{field}','getAllReportsByField');
             Route::get('/markReportAsDone/{id}','markReportAsDone');
-
         });
     });
 
 });
 
 Route::prefix('admins')->group(function(){
-    Route::post('login',[LoginController::class,'login']);
+    Route::post('login',[AdminController::class,'login']);
     Route::middleware('auth:sanctum')->group(function(){
         Route::prefix('reports')->controller(ReportController::class)->group(function(){
             Route::get('/','index');
@@ -72,30 +65,30 @@ Route::prefix('admins')->group(function(){
         Route::get('/getAllAdminsInDepartment/{location}',[AdminController::class,'getAllAdminsInDepartment']);
         Route::put('/updateAdminStatus/{id}',[AdminController::class,'updateAdminStatus']);
         Route::put('/updateAdminInfo/{id}',[AdminController::class,'updateAdminInfo']);
-        Route::post('register',RegisterController::class);
+        Route::post('/addAdmin',[AdminController::class,'addAdmin']);
         Route::delete('/delete/{id}',[AdminController::class,'delete']);
-        Route::get('statistics',StatisticsController::class);
-        Route::post('logout-current',[LoginController::class,'logoutCurrent']);
+        Route::get('/getStats',[AdminController::class,'getStats']);
+        Route::post('logout-current',[AdminController::class,'logoutCurrent']);
     });
 });
 
 Route::prefix('users')->group(function(){
-    Route::prefix('auth')->group(function(){
-        Route::post('register',UserRegisterController::class);
-        Route::post('login',[UserLoginController::class,'login']);
-        Route::prefix('code')->group(function(){
-            Route::post('send', [VerificationController::class,'send']);
-            Route::post('verify', [VerificationController::class,'verify']);
+        Route::prefix('auth')->group(function(){
+            Route::post('register',[UserController::class,'register']);
+            Route::post('login',[UserController::class,'login']);
+            Route::prefix('code')->group(function(){
+                Route::post('send', [VerificationController::class,'send']);
+                Route::post('verify', [VerificationController::class,'verify']);
+            });
         });
-        Route::middleware('auth:sanctum')->group(function(){
-            Route::post('logout-current',[UserLoginController::class,'logoutCurrent']);
-            // Route::get('profile',ProfileController::class);
-        });
-    });
-    Route::prefix('reports')->group(function(){
-        Route::middleware('auth:sanctum')->group(function(){
-            Route::post('store',[ReportController::class,'store']);
-    });
 
+        Route::middleware('auth:sanctum')->group(function(){
+            Route::prefix('reports')->group(function(){
+                Route::middleware('auth:sanctum')->group(function(){
+                    Route::post('/store',[ReportController::class,'store']);
+                    Route::get('/showByUserId/{id}',[ReportController::class,'showByUserId']);
+            });
+            Route::post('logout-current',[UserController::class,'logoutCurrent']);
+        });
     });
 });

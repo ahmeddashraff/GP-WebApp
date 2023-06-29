@@ -2,14 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\Auth\LoginRequest;
+use App\Http\Requests\User\Auth\RegisterRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     use ApiResponses;
+    public function login(LoginRequest $request)
+    {
+        $user = User::where('email',$request->email)->where(function ($query) {
+            $query->where('status', 1);
+        })->first();
+        if( $user == null || ! Hash::check($request->password,$user->password) ){
+            return $this->error(['email' => ['The provided credentials are incorrect.']],"Invalid Attempt",401);
+        }
+        $token = 'Bearer '.  $user->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
+        $user->token = $token;
+        return $this->data(compact('user'));
+    }
+
+    public function register(RegisterRequest $request)
+    {
+        $user = User::create([
+            'full_name'=>$request->full_name,
+            'email'=>$request->email,
+            'password'=>Hash::make($request->password),
+            'phone_number'=>$request->phone_number,
+            'national_id'=>$request->national_id,
+            'location'=>$request->location,
+            'gender'=>$request->gender,
+            'year_of_birth'=>$request->year_of_birth
+        ]);
+        $token = 'Bearer '.  $user->createToken("Ahmed's iPhone" . '-' . "ios")->plainTextToken;
+        $user->token = $token;
+        // dd($user);
+        return $this->data(compact('user'));
+    }
+
+    public function logoutCurrent(Request $request)
+    {
+        $request->user('sanctum')->currentAccessToken()->delete();
+        return $this->success("Logout successfully from your current token");
+    }
+
+
+    private function getToken(string $token)
+    {
+        $tokenArray = explode(' ',$token);
+        return explode('|',$tokenArray[1])[0];
+    }
+
     public function restrict(Request $request, string $id)
     {
         $user = User::findOrFail($id);
@@ -92,6 +140,29 @@ class UserController extends Controller
         }
     }
 
+    public function updateUserInfo(UpdateUserRequest $request, $id)
+    {
+        $user = User::findOrFail($id);
+        if (!$user) {
+            return $this->error(['user' => ['No users found by the given id']],"Not Found",404);
+        }
+        // Update the user info
+        if ($request->filled('phone_number')) {
+            $user->phone_number = $request->phone_number;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if ($request->filled('email')) {
+            $user->email = $request->email;
+        }
+
+        $user->update();
+
+        return $this->data(compact('user'));
+    }
     /**
      * Display a listing of the resource.
      */

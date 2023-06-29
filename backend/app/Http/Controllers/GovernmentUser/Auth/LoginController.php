@@ -34,4 +34,5 @@ class LoginController extends Controller
     {
         $tokenArray = explode(' ',$token);
         return explode('|',$tokenArray[1])[0];
-    }}
+    }
+}
