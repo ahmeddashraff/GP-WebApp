@@ -18,7 +18,7 @@ const Home = () => {
     };
     async function getStatistics() {
         setLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/statistics`, config);
+        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getStats`, config);
         if (data.success === true) {
             console.log(data.data.statistics);
             setStatistics(data.data.statistics);

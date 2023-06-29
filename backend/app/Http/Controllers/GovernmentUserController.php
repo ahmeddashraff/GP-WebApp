@@ -6,11 +6,13 @@ use App\Http\Requests\GovernmentUser\Auth\LoginRequest;
 use App\Http\Requests\GovernmentUser\Auth\RegisterRequest;
 use App\Http\Requests\GovernmentUser\UpdateGovernmentUserInfo;
 use App\Models\GovernmentUser;
+use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class GovernmentUserController extends Controller
 {
+    use ApiResponses;
     public function login(LoginRequest $request)
     {
         $gov_user = GovernmentUser::where('email',$request->email)->first();

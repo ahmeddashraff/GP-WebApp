@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\User\Auth\VerificationController;
 use App\Http\Requests\User\Auth\LoginRequest;
 use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Http\Requests\User\UpdateUserRequest;
@@ -22,6 +23,7 @@ class UserController extends Controller
         if( $user == null || ! Hash::check($request->password,$user->password) ){
             return $this->error(['email' => ['The provided credentials are incorrect.']],"Invalid Attempt",401);
         }
+        // VerificationController::send
         $token = 'Bearer '.  $user->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
         $user->token = $token;
         return $this->data(compact('user'));
@@ -140,9 +142,10 @@ class UserController extends Controller
         }
     }
 
-    public function updateUserInfo(UpdateUserRequest $request, $id)
+    public function update(UpdateUserRequest $request)
     {
-        $user = User::findOrFail($id);
+        // dd($request);
+        $user = User::findOrFail($request->user('sanctum')->id);
         if (!$user) {
             return $this->error(['user' => ['No users found by the given id']],"Not Found",404);
         }
@@ -169,22 +172,8 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return $this->data(compact('users'));    }
+        return $this->data(compact('users'));
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -201,14 +190,6 @@ class UserController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
     {
         //
     }

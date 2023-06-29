@@ -13,7 +13,7 @@ const Profile = () => {
                             className="img-circle profile-avatar mb-3"
                             alt="User avatar"
                         />
-                        <h2 className="text-center">Mohammed Khaled Sabrah</h2>
+                        <h2 className="text-center">{admin.full_name}</h2>
                     </div>
                 </div>
                 <div style={{ width: "50%" }} className="">

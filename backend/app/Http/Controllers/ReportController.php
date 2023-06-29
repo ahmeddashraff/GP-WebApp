@@ -65,6 +65,10 @@ class ReportController extends Controller
     //  */
     public function store(StoreReportRequest $request)
     {
+        if($request->user('sanctum')->email_verified_at == null)
+        {
+            return $this->error(['report' => ['your email is not verified']],"unauthenticated",401);
+        }
         $imageName = HasMedia::upload($request->file('image'),public_path('images\reports'));
         $data = $request->except('image');
         $data['image'] = $imageName;

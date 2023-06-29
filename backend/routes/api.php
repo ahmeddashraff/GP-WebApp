@@ -4,7 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GovernmentUserController;
-use App\Http\Controllers\User\Auth\VerificationController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -62,7 +62,7 @@ Route::prefix('admins')->group(function(){
             Route::put('/updateGovernmentUserInfo/{id}','updateGovernmentUserInfo');
             Route::delete('/delete/{id}','delete');
         });
-        Route::get('/getAllAdminsInDepartment/{location}',[AdminController::class,'getAllAdminsInDepartment']);
+        Route::get('/getAllAdminsInDepartment',[AdminController::class,'getAllAdminsInDepartment']);
         Route::put('/updateAdminStatus/{id}',[AdminController::class,'updateAdminStatus']);
         Route::put('/updateAdminInfo/{id}',[AdminController::class,'updateAdminInfo']);
         Route::post('/addAdmin',[AdminController::class,'addAdmin']);
@@ -84,11 +84,10 @@ Route::prefix('users')->group(function(){
 
         Route::middleware('auth:sanctum')->group(function(){
             Route::prefix('reports')->group(function(){
-                Route::middleware('auth:sanctum')->group(function(){
                     Route::post('/store',[ReportController::class,'store']);
                     Route::get('/showByUserId/{id}',[ReportController::class,'showByUserId']);
             });
             Route::post('logout-current',[UserController::class,'logoutCurrent']);
+            Route::put('update',[UserController::class,'update']);
         });
-    });
 });

@@ -214,6 +214,7 @@ const GovReports = (props) => {
                                             <th scope="col" className="col-3 table-header">Incident Type</th>
                                             <th scope="col" className="col-3 table-header">Date</th>
                                             <th scope="col" className="col-2 table-header">Status</th>
+                                            {/* <th scope="col" className="col-2 table-header">Severity</th> */}
                                             <th scope="col" className="col-2 table-header">Action</th>
                                         </tr>
                                     </thead>

@@ -22,12 +22,12 @@ class UpdateUserRequest extends FormRequest
 
     public function rules(): array
     {
-        $userId = $this->route('id');
+        $userId = $this->user('sanctum')->id;
         return [
             'email' => [
                 'sometimes',
                 'email',
-                'unique:user,email,' . $userId,
+                'unique:users,email,' . $userId,
             ],
             'password' => [
                 'sometimes',
@@ -35,7 +35,7 @@ class UpdateUserRequest extends FormRequest
             ],
             'phone_number' => [
                 'sometimes',
-                'unique:user,phone_number,' . $userId,
+                'unique:users,phone_number,' . $userId,
                 'regex:/^(010|011|012|015)\d{8}$/',
             ],
         ];

@@ -9,11 +9,13 @@ use App\Http\Requests\Admin\UpdateAdminStatus;
 use App\Models\Admin;
 use App\Models\Report;
 use App\Models\User;
+use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+    use ApiResponses;
     public function login(LoginRequest $request)
     {
         $admin = Admin::where('email',$request->email)->first();
@@ -55,10 +57,10 @@ class AdminController extends Controller
         return $this->data(compact('admin'));
     }
 
-    public function getAllAdminsInDepartment(string $location)
+    public function getAllAdminsInDepartment(Request $request)
     {
-
-        $admins = Admin::where('department_loc', $location)
+        $user = $request->user('sanctum')->department_loc;
+        $admins = Admin::where('department_loc', $user)
         ->where('role', '!=', 'manager')
         ->get();
         if (!$admins) {

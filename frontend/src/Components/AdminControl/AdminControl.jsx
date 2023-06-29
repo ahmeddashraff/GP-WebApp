@@ -154,7 +154,7 @@ const AdminControl = () => {
 
     async function getAdmins() {
         setAdminsLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getAllAdminsInDepartment/${admin.department_loc}`, config);
+        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getAllAdminsInDepartment`, config);
         if (data.success === true) {
             setAdmins(data.data.admins.reverse())
             setAdminsLoading(false);
@@ -200,7 +200,7 @@ const AdminControl = () => {
             console.log(addedAdmin);
             const { first_name, middle_name, last_name, ...addAdminRequest } = addedAdmin;
             console.log(addAdminRequest);
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/register`, addAdminRequest, config);
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/addAdmin`, addAdminRequest, config);
             console.log(data);
             if (data.success === true) {
                 const updatedAdmins = [...admins, data.data.admin];
