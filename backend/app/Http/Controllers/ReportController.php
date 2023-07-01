@@ -120,6 +120,14 @@ class ReportController extends Controller
 
         return $this->data(compact('reports'));
     }
+
+    public function getUserReports(Request $request)
+    {
+        $userId = $request->user("sanctum")->id;
+        $reports = Report::where('user_id', $userId)->get();
+
+        return $this->data(compact('reports'));
+    }
     // /**
     //  * Show the form for editing the specified resource.
     //  */

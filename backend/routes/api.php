@@ -85,7 +85,7 @@ Route::prefix('users')->group(function(){
         Route::middleware(['auth:sanctum', 'check.user'])->group(function(){
             Route::prefix('reports')->group(function(){
                     Route::post('/store',[ReportController::class,'store']);
-                    Route::get('/showByUserId/{id}',[ReportController::class,'showByUserId']);
+                    Route::get('/getUserReports',[ReportController::class,'getUserReports']);
                     Route::get('/getAllIncidents',[IncidentController::class,'getAllIncidents']);
 
             });
