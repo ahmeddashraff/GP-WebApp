@@ -5,23 +5,29 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\User\Auth\VerificationController;
 use App\Http\Requests\User\Auth\LoginRequest;
 use App\Http\Requests\User\Auth\RegisterRequest;
+use App\Http\Requests\User\RestrictionRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
+use App\Services\CheckIfRequestFromAdmin;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class UserController extends Controller
 {
     use ApiResponses;
+
+
+
     public function login(LoginRequest $request)
     {
         $user = User::where('email',$request->email)->where(function ($query) {
             $query->where('status', 1);
         })->first();
-        if( $user == null || ! Hash::check($request->password,$user->password) ){
-            return $this->error(['email' => ['The provided credentials are incorrect.']],"Invalid Attempt",401);
+        if( !$user || ! Hash::check($request->password,$user->password) ){
+            return $this->error(['email' => 'The provided credentials are incorrect.'],"Invalid Attempt",401);
         }
         // VerificationController::send
         $token = 'Bearer '.  $user->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
@@ -43,7 +49,6 @@ class UserController extends Controller
         ]);
         $token = 'Bearer '.  $user->createToken("Ahmed's iPhone" . '-' . "ios")->plainTextToken;
         $user->token = $token;
-        // dd($user);
         return $this->data(compact('user'));
     }
 
@@ -60,12 +65,16 @@ class UserController extends Controller
         return explode('|',$tokenArray[1])[0];
     }
 
-    public function restrict(Request $request, string $id)
+    public function restrict(RestrictionRequest $request, int $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if(!$user){
+            return $this->error(['user' =>"user not found"],"Not Found",404);
+        }
+
         if($user->status == 0)
         {
-            return $this->error(['restrict' => ["user can't be restricted."]],"Invalid Attempt",400);
+            return $this->error(['restrict' => "user can't be restricted."],"Invalid Attempt",400);
         }
         else
         {
@@ -86,33 +95,56 @@ class UserController extends Controller
             }
             else
             {
-                    return $this->error(['restriction_period' => ['The provided format is invalid.']],"Invalid Attempt",422);
+                    return $this->error(['restriction_period' => 'The provided format is invalid.'],"Invalid Attempt",422);
             }
             $user->status = 2;
             $user->update();
+
+            $accessToken = PersonalAccessToken::where('tokenable_id', $id)
+            ->where('tokenable_type', get_class($user))
+            ->first();
+            if($accessToken)
+            {
+                $accessToken->delete();
+            }
             return $this->success("Restriction applied",200);
         }
 
     }
 
-    public function ban(string $id)
+    public function ban(int $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if(!$user){
+            return $this->error(['user' => "user not found"],"Not Found",404);
+        }
+
         if($user->status == 0)
         {
-            return $this->error(['ban' => ["User is already banned."]],"Invalid Attempt",400);
+            return $this->error(['user' => "User is already banned."],"Invalid Attempt",400);
         }
         $user->status = 0;
         $user->restricted_until = null;
         $user->update();
+        $accessToken = PersonalAccessToken::where('tokenable_id', $id)
+        ->where('tokenable_type', get_class($user))
+        ->first();
+        if($accessToken)
+        {
+            $accessToken->delete();
+        }
         return $this->success("Ban applied",200);
     }
-    public function unban(string $id)
+    public function unban(int $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if(!$user){
+            return $this->error(['user' => "user not found"],"Not Found",404);
+        }
+
         if($user->status == 1 || $user->status == 2)
         {
-            return $this->error(['unban' => ["user is already unbanned."]],"Invalid Attempt",400);
+            return $this->error(['user' => "user is already unbanned."],"Invalid Attempt",400);
         }
         else
         {
@@ -123,20 +155,25 @@ class UserController extends Controller
         }
     }
 
-    public function unrestrict(string $id)
+    public function unrestrict(int $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if(!$user){
+            return $this->error(['user' => "user not found"],"Not Found",404);
+        }
+
         if($user->status == 0)
         {
-            return $this->error(['unrestrict' => ["user can't be unrestricted."]],"Invalid Attempt",400);
+            return $this->error(['unrestrict' => "user can't be unrestricted."],"Invalid Attempt",400);
         }
         else if($user->status == 1)
         {
-            return $this->error(['unrestrict' => ["user is already unrestricted."]],"Invalid Attempt",400);
+            return $this->error(['unrestrict' => "user is already unrestricted."],"Invalid Attempt",400);
         }
         else
         {
             $user->status = 1;
+            $user->restricted_until = null;
             $user->update();
             return $this->success("user is unrestricted",200);
         }
@@ -144,11 +181,16 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request)
     {
-        // dd($request);
-        $user = User::findOrFail($request->user('sanctum')->id);
-        if (!$user) {
-            return $this->error(['user' => ['No users found by the given id']],"Not Found",404);
+        if($request->user('sanctum')->getTable() != "users")
+        {
+            return $this->error(['token' => 'invalid token'],"unauthorized",401);
         }
+
+        $user = User::find($request->user('sanctum')->id);
+        if(!$user){
+            return $this->error(['user' => "user not found"],"Not Found",404);
+        }
+
         // Update the user info
         if ($request->filled('phone_number')) {
             $user->phone_number = $request->phone_number;
@@ -164,7 +206,7 @@ class UserController extends Controller
 
         $user->update();
 
-        return $this->data(compact('user'));
+        return $this->success("user is updated successfully", 200);
     }
     /**
      * Display a listing of the resource.
@@ -179,13 +221,26 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if(!$user){
+            return $this->error(['user' => "user not found"],"Not Found",404);
+        }
+
         return $this->data(compact('user'));
     }
 
 
+    public function getProfile(Request $request)
+    {
+        $user = User::find($request->user('sanctum')->id);
+        if(!$user){
+            return $this->error(['user' => "user not found"],"Not Found",404);
+        }
+
+        return $this->data(compact('user'));
+    }
     /**
      * Show the form for editing the specified resource.
      */

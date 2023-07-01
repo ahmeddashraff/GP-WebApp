@@ -10,7 +10,7 @@ class Report extends Model
 {
     use HasFactory;
     protected $fillable = ['description','status',
-    'image','severity','user_id','admin_id','gov_user_id','type'];
+    'image','severity','user_id','admin_id','gov_user_id','type', 'location'];
 
     protected function image(): Attribute
     {

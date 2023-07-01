@@ -23,14 +23,12 @@ class StoreReportRequest extends FormRequest
     {
         return [
             'description'=>['nullable','string','between:2,512'],
-            'severity'=>['required','integer','between:1,7'],
-            'status'=>['nullable','in:1,0'],
-            'admin_id'=>['nullable','integer','exists:admins,id'],
-            'user_id'=>['nullable','integer','exists:users,id'],
-            'gov_user_id'=>['nullable','integer','exists:government_users,id'],
+            'severity'=>['required','integer','in:1,2'],
+            'location'=>['required','string','between:2,512'],
             'image'=>['required','mimes:png,jpg,jpeg','max:1024'],
-            'type'=>['required']
-
+            'type'=>['required', 'in:fire,flooding,pothole,fallen tree'],
+            'longitude' => ['required', 'numeric', 'regex:/^(-?((([1-9]\d?|1[0-7]\d)(\.\d{1,6})?)|180(\.0{1,6})?))$/'],
+            'latitude' => ['required', 'numeric', 'regex:/^(-?((([1-9]\d?|1[0-7]\d)(\.\d{1,6})?)|90(\.0{1,6})?))$/'],
         ];
     }
 }

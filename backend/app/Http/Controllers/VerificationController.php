@@ -28,6 +28,10 @@ class VerificationController extends Controller
         // dd(config('auth.guards'));
         // dd($request->user('sanctum'));
         $user = $request->user('sanctum');
+        if(!$user)
+        {
+            return $this->error(['token'=>'invalid token'], "unauthorized", 401);
+        }
         $token = $request->header('Authorization');
         if($user->verification_code == $request->verification_code)
         {

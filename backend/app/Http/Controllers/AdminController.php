@@ -20,7 +20,7 @@ class AdminController extends Controller
     {
         $admin = Admin::where('email',$request->email)->first();
         if(! Hash::check($request->password,$admin->password)){
-            return $this->error(['email' => ['The provided credentials are incorrect.']],"Invalid Attempt",401);
+            return $this->error(['email' => 'The provided credentials are incorrect.'],"Invalid Attempt",401);
         }
         $token = 'Bearer '.  $admin->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
         $admin->token = $token;
@@ -64,31 +64,30 @@ class AdminController extends Controller
         ->where('role', '!=', 'manager')
         ->get();
         if (!$admins) {
-            return $this->error(['admins' => ['No admins found by the given location']],"Not Found",404);
+            return $this->error(['admins' => 'No admins found by the given location'],"Not Found",404);
         }
         return $this->data(compact('admins'));
     }
 
-    public function updateAdminStatus(UpdateAdminStatus $request, $id)
+    public function updateAdminStatus(UpdateAdminStatus $request,int $id)
     {
 
         // Find the admin by ID
-        $admin = Admin::findOrFail($id);
-
+        $admin = Admin::find($id);
+        if(!$admin){
+            return $this->error(['admin' => 'admin not found'],"Not Found",404);
+        }
         // Update the admin status
         $admin->status = $request->status;
         $admin->update();
-        if (!$admin) {
-            return $this->error(['admin' => ['No admins found by the given id']],"Not Found",404);
-        }
         return $this->data(compact('admin'));
     }
 
-    public function updateAdminInfo(UpdateAdminInfo $request, $id)
+    public function updateAdminInfo(UpdateAdminInfo $request, int $id)
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Admin::find($id);
         if (!$admin) {
-            return $this->error(['admin' => ['No admins found by the given id']],"Not Found",404);
+            return $this->error(['admin' =>'admin not found'],"Not Found",404);
         }
         // Update the admin info
         if ($request->filled('phone_number')) {
@@ -108,11 +107,14 @@ class AdminController extends Controller
         return $this->data(compact('admin'));
     }
 
-    public function delete($id)
+    public function delete(int $id)
     {
-        $admin = Admin::findOrFail($id); // select
+        $admin = Admin::find($id); // select
+        if (!$admin) {
+            return $this->error(['admin' => 'admin not found'],"Not Found",404);
+        }
         $admin->delete();
-        return $this->success("Admin Deleted Successfully",201);
+        return $this->success("Admin Deleted Successfully",200);
     }
 
     public function getStats()
