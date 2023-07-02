@@ -30,9 +30,9 @@ class HasMedia {
     private function getImageExtension($imageType)
     {
         $extensions = [
-            'image/jpeg' => 'jpg',
+            'image/jpeg' => 'jpeg',
             'image/png' => 'png',
-            'image/gif' => 'gif',
+            'image/jpg' => 'jpg',
             // Add more supported image types and their corresponding extensions here
         ];
 
