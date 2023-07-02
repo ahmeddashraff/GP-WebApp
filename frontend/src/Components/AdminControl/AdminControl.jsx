@@ -17,7 +17,7 @@ const AdminControl = () => {
     let [addAdminLoading, setAddAdminLoading] = useState(false);
 
     let [errorList, setErrorList] = useState(null);
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -42,37 +42,15 @@ const AdminControl = () => {
         national_id: ' ',
         role: 'admin',
         password_confirmation: '',
-        department_loc: admin.department_loc
     });
 
 
-    const [adminFilter, setAdminFilter] = useState({ status: [] });
 
     const handleEditClick = () => {
         setEditMode(true);
     };
 
-    const handleChange = (e) => {
-        // Destructuring
-        const { value, checked } = e.target;
-        const { status } = adminFilter;
 
-        console.log(`${value} is ${checked}`);
-
-        // Case 1 : The user checks the box
-        if (checked) {
-            setAdminFilter({
-                status: [...status, value]
-            });
-        }
-
-        // Case 2  : The user unchecks the box
-        else {
-            setAdminFilter({
-                status: status.filter((e) => e !== value)
-            });
-        }
-    };
     const performSearch = () => {
         const query = searchQuery.toLowerCase();
         const results = admins && admins.filter(
@@ -106,26 +84,10 @@ const AdminControl = () => {
         // Create a copy of addedAdmin
         let updatedAddedAdmin = { ...addedAdmin };
 
-        // Check if the changed input is a name field
-        if (name === "first_name" || name === "middle_name" || name === "last_name") {
-            // Update the corresponding name field
-            updatedAddedAdmin[name] = value;
-
-            // Combine the name fields to update the full_name field
-            const firstName = name === "first_name" ? value : addedAdmin.first_name;
-            const middleName = name === "middle_name" ? value : addedAdmin.middle_name;
-            const lastName = name === "last_name" ? value : addedAdmin.last_name;
-            const combinedName = `${firstName} ${middleName} ${lastName}`;
-
-            // Update the full_name field
-            updatedAddedAdmin.full_name = combinedName;
-        } else {
-            // Update other fields
-            updatedAddedAdmin[name] = value;
-        }
+        updatedAddedAdmin[name] = value;
+        
 
         console.log(updatedAddedAdmin)
-        // Update the state with the modified addedAdmin
         setAddedAdmin(updatedAddedAdmin);
     }
 
@@ -158,7 +120,6 @@ const AdminControl = () => {
         if (data.success === true) {
             setAdmins(data.data.admins.reverse())
             setAdminsLoading(false);
-
         }
     }
 
@@ -206,6 +167,7 @@ const AdminControl = () => {
                 const updatedAdmins = [...admins, data.data.admin];
                 setAdmins(updatedAdmins);
                 setAddAdminLoading(false);
+                setErrorList(null);
             }
             else {
                 setErrorList(data.errors)
@@ -308,16 +270,7 @@ const AdminControl = () => {
                                     </thead>
                                     {adminsLoading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
                                         <tbody>
-                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).filter((admin) => {
-                                                if (
-                                                    adminFilter.status.length > 0 &&
-                                                    !adminFilter.status.includes(
-                                                        admin.status.toString())
-                                                ) {
-                                                    return false;
-                                                }
-                                                return true;
-                                            }).map(admin => (
+                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).map(admin => (
                                                 <>
                                                     <tr key={admin.id}>
                                                         <th scope="row" className="col-1">{admin.id}</th>
@@ -350,17 +303,11 @@ const AdminControl = () => {
                                             <i className="fas fa-user fa-lg me-3 fa-fw"></i>
                                             <div className="form-outline flex-fill mb-0">
                                                 <div className="row d-flex ">
-                                                    <div className="col-md-4">
-                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter first name" name="first_name" className="form-control " />
+                                                    <div className="col-md-12">
+                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter full name" name="full_name" className="form-control " />
                                                     </div>
 
-                                                    <div className="col-md-4">
-                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter middle name" name="middle_name" className="form-control" />
-
-                                                    </div>
-                                                    <div className="col-md-4">
-                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter last name" name="last_name" className="form-control" />
-                                                    </div>
+  
 
                                                 </div>
                                                 {errorList && (errorList.full_name && <div className="error-alert">full name is required</div>)}

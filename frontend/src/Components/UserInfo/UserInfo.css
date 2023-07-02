@@ -29,6 +29,9 @@
 #profile .points-btn{
     width: 130px;
 }
+#profile .not-found{
+    margin-top: 10%;
+}
 /* ------------------------------------------------------- */
 #profile .popup .modal {
     position: fixed;
@@ -105,7 +108,10 @@
         width:130px;
         color: #424242;
     }
-
+    #profile .page-loading
+    {
+        margin-top: 10%;
+    }
     /* -------------------------------- */
     #profile .restrictPopup .restrict-modal {
         position: fixed;

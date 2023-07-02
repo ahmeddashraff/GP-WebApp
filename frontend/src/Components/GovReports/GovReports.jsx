@@ -15,7 +15,7 @@ const GovReports = (props) => {
     const [searchResults, setSearchResults] = useState([]);
 
     const [reportFilter, setReportFilter] = useState({ severities: [], types: [], status: [] });
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
 
     const handleChange = (e) => {
         // Destructuring

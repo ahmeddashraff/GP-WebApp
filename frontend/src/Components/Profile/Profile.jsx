@@ -2,7 +2,7 @@ import React from "react";
 import "./Profile.css";
 const Profile = () => {
 
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
     return (
         <div id="Profile">
             <div className="d-flex justify-content-center align-items-center">

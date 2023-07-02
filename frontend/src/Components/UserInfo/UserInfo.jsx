@@ -20,8 +20,12 @@ const UserInfo = (props) => {
     const [restrictLoading, setRestrictLoading] = useState(false);
     const [banLoading, setBanLoading] = useState(false);
 
+    const [pageLoading, setPageLoading] = useState(false);
+
+    const [userNotFound, setUserNotFound] = useState(false);
+
     const { userId } = useParams();
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
     const [user, setUser] = useState(null);
     const [reports, setReports] = useState(null);
 
@@ -58,14 +62,24 @@ const UserInfo = (props) => {
     };
 
     async function getUser() {
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/users/show/${userId}`, config);
-        if (data.data.user.status == 0) {
-            setBanned(true);
+        try {
+            setPageLoading(true);
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/users/show/${userId}`, config);
+            if (data.data.user.status == 0) {
+                setBanned(true);
+            }
+            else if (data.data.user.status == 2) {
+                setRestricted(true);
+            }
+            setPageLoading(false);
+            setUser(data.data.user)
         }
-        else if (data.data.user.status == 2) {
-            setRestricted(true);
+        catch (error) {
+            setUserNotFound(true);
+            setPageLoading(false);
+            console.log('axios', error)
         }
-        setUser(data.data.user)
+
     }
 
     async function getUserReports() {
@@ -123,13 +137,14 @@ const UserInfo = (props) => {
         getUserReports();
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         getUser();
     }, [restricted])
 
     return (
         <section id="profile">
-            {user && <>
+            {pageLoading ? <i className='page-loading fas fa-spinner fa-spin fa-3x'></i> :  (
+                !user ? <h1 className='not-found'>User Not Found</h1> : <>
 
                 <div className="container mt-5">
 
@@ -314,7 +329,8 @@ const UserInfo = (props) => {
                     </div>
                 </div>}
 
-            </>}
+            </>)
+            }
 
         </section>
 

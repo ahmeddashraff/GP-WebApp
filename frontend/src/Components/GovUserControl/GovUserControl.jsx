@@ -15,7 +15,7 @@ const GovUserControl = () => {
     let [addAdminLoading, setAddAdminLoading] = useState(false);
 
     let [errorList, setErrorList] = useState(null);
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -36,7 +36,7 @@ const GovUserControl = () => {
         },
     };
 
-    
+
     let [addedAdmin, setAddedAdmin] = useState({
         email: '',
         password: '',
@@ -49,33 +49,10 @@ const GovUserControl = () => {
     });
 
 
-    const [adminFilter, setAdminFilter] = useState({ status: [] });
-
     const handleEditClick = () => {
         setEditMode(true);
     };
 
-    const handleChange = (e) => {
-        // Destructuring
-        const { value, checked } = e.target;
-        const { status } = adminFilter;
-
-        console.log(`${value} is ${checked}`);
-
-        // Case 1 : The user checks the box
-        if (checked) {
-            setAdminFilter({
-                status: [...status, value]
-            });
-        }
-
-        // Case 2  : The user unchecks the box
-        else {
-            setAdminFilter({
-                status: status.filter((e) => e !== value)
-            });
-        }
-    };
     const performSearch = () => {
         const query = searchQuery.toLowerCase();
         const results = admins && admins.filter(
@@ -108,24 +85,7 @@ const GovUserControl = () => {
 
         // Create a copy of addedAdmin
         let updatedAddedAdmin = { ...addedAdmin };
-
-        // Check if the changed input is a name field
-        if (name === "first_name" || name === "middle_name" || name === "last_name") {
-            // Update the corresponding name field
-            updatedAddedAdmin[name] = value;
-
-            // Combine the name fields to update the full_name field
-            const firstName = name === "first_name" ? value : addedAdmin.first_name;
-            const middleName = name === "middle_name" ? value : addedAdmin.middle_name;
-            const lastName = name === "last_name" ? value : addedAdmin.last_name;
-            const combinedName = `${firstName} ${middleName} ${lastName}`;
-
-            // Update the full_name field
-            updatedAddedAdmin.full_name = combinedName;
-        } else {
-            // Update other fields
-            updatedAddedAdmin[name] = value;
-        }
+        updatedAddedAdmin[name] = value;
 
         console.log('updated admin', updatedAddedAdmin)
         // Update the state with the modified addedAdmin
@@ -157,7 +117,7 @@ const GovUserControl = () => {
 
     async function getAdmins() {
         setAdminsLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/GovUsers/getAllGovernmentUsersInDepartment/${admin.department_loc}`, config);
+        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/GovUsers/getAllGovernmentUsersInDepartment`, config);
         if (data.success === true) {
             console.log(data.data);
             setAdmins(data.data.government_users.reverse())
@@ -178,8 +138,8 @@ const GovUserControl = () => {
             const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
             if (adminIndex !== -1) {
                 const updatedAdmins = [...admins];
-                console.log("inside update status",data );
-                console.log("inside update status",data.data.government_user );
+                console.log("inside update status", data);
+                console.log("inside update status", data.data.government_user);
                 updatedAdmins[adminIndex] = data.data.government_user;
                 setAdmins(updatedAdmins);
             }
@@ -212,6 +172,7 @@ const GovUserControl = () => {
                 const updatedAdmins = [...admins, data.data.government_user];
                 setAdmins(updatedAdmins.reverse());
                 setAddAdminLoading(false);
+                setErrorList(null);
             }
             else {
                 setErrorList(data.errors)
@@ -271,31 +232,6 @@ const GovUserControl = () => {
                                     <option>oldest to newest</option>
                                 </select>
 
-                                {/* <div className="nav-item dropdown ms-2">
-                                    <a
-                                        className="nav-link dropdown-toggle"
-                                        href="#"
-                                        id="navbarDropdownMenuLink"
-                                        role="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                    >
-                                        <strong>Filter By</strong>
-
-                                    </a>
-                                    <div className="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                        <strong>Status:</strong>
-                                        <div className="d-flex align-items-center mb-0">
-                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
-                                            <label for="status" className="mb-0">active</label>
-                                        </div>
-                                        <div className="d-flex align-items-center">
-                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
-                                            <label for="status">inactive</label>
-                                        </div>
-                                    </div>
-                                </div> */}
                             </div>
                         </div>
                         <div className="rounded shadow bg-white">
@@ -314,28 +250,20 @@ const GovUserControl = () => {
                                     </thead>
                                     {adminsLoading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
                                         <tbody>
-                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).filter((admin) => {
-                                                if (
-                                                    adminFilter.status.length > 0 &&
-                                                    !adminFilter.status.includes(admin.status.toString())
-                                                ) {
-                                                    return false;
-                                                }
-                                                return true;
-                                            }).map(admin => (
-                                                <>
-                                                    <tr key={admin.id}>
-                                                        <th scope="row" className="col-1">{admin.id}</th>
-                                                        <td className="col-3">{admin.full_name}</td>
-                                                        <td className="col-2">{admin.phone_number}</td>
-                                                        <td className="col-2">{admin.email}</td>
-                                                        <td className="col-2">{admin.national_id}</td>
+                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).map(admin => (
+                                                    <>
+                                                        <tr key={admin.id}>
+                                                            <th scope="row" className="col-1">{admin.id}</th>
+                                                            <td className="col-3">{admin.full_name}</td>
+                                                            <td className="col-2">{admin.phone_number}</td>
+                                                            <td className="col-2">{admin.email}</td>
+                                                            <td className="col-2">{admin.national_id}</td>
 
-                                                        <td className="col-2"><i onClick={() => handleModalOpen('modal' + admin.id)} data-modal={"modal" + admin.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
-                                                    </tr>
-                                                </>
+                                                            <td className="col-2"><i onClick={() => handleModalOpen('modal' + admin.id)} data-modal={"modal" + admin.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
+                                                        </tr>
+                                                    </>
 
-                                            ))}
+                                                ))}
                                         </tbody>
                                     }
 
@@ -355,18 +283,9 @@ const GovUserControl = () => {
                                             <i className="fas fa-user fa-lg me-3 fa-fw"></i>
                                             <div className="form-outline flex-fill mb-0">
                                                 <div className="row d-flex ">
-                                                    <div className="col-md-4">
-                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter first name" name="first_name" className="form-control " />
+                                                    <div className="col-md-12">
+                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter full name" name="full_name" className="form-control " />
                                                     </div>
-
-                                                    <div className="col-md-4">
-                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter middle name" name="middle_name" className="form-control" />
-
-                                                    </div>
-                                                    <div className="col-md-4">
-                                                        <input onChange={getAddedAdmin} type="text" placeholder="Enter last name" name="last_name" className="form-control" />
-                                                    </div>
-
                                                 </div>
                                                 {errorList && (errorList.full_name && <div className="error-alert">full name is required</div>)}
                                             </div>
@@ -404,7 +323,7 @@ const GovUserControl = () => {
                                         <div className="d-flex flex-row align-items-center mb-4">
                                             <i class="fa-solid fa-people-group fa-lg me-3 fa-fw"></i>
                                             <div className="form-outline flex-fill mb-0">
-                                                <select  onChange={getAddedAdmin} name="field" className="form-select">
+                                                <select onChange={getAddedAdmin} name="field" className="form-select">
                                                     <option value="emergency">emergency</option>
                                                     <option value="civil_defense">civil defense</option>
                                                 </select>

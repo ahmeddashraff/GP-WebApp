@@ -6,20 +6,28 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './Navbar.css';
 import { NavLink, useHistory } from 'react-router-dom/cjs/react-router-dom';
+import axios from 'axios';
 
 const Navbar = (props) => {
 
     let history = useHistory();
 
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
     function handleLogout() {
         logOut();
         history.push('/SignIn');
     }
 
-    function logOut() {
-        if (localStorage.getItem('admin')) {
-            localStorage.removeItem('admin');
+    async function logOut() {
+        if (sessionStorage.getItem('admin')) {
+            const config = {
+                headers: {
+                    Authorization: admin.token,
+                    'Content-Type': 'application/json',
+                },
+            };
+            let {data } = await axios.post("http://127.0.0.1:8000/api/admins/logout-current",{},config) 
+            sessionStorage.removeItem('admin');
         }
     }
 
@@ -78,7 +86,6 @@ const Navbar = (props) => {
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <NavLink className="dropdown-item" to="/Profile">View Profile</NavLink>
-                                <NavLink className="dropdown-item" to="/Home">Settings</NavLink>
                                 <div className="dropdown-divider"></div>
                                 <p className="dropdown-item text-danger mb-0 cursor-pointer" onClick={handleLogout}>Logout</p>
                             </div>

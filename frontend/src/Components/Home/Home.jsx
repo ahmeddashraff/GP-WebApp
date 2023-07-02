@@ -5,10 +5,12 @@ import axios from 'axios';
 import { NavLink, useHistory } from 'react-router-dom/cjs/react-router-dom';
 
 const Home = () => {
-
+    let history = useHistory();
     const [statistics, setStatistics] = useState(null);
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
     let [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchUserLoading, setSearchUserLoading] = useState(false);
 
     const config = {
         headers: {
@@ -16,6 +18,14 @@ const Home = () => {
             'Content-Type': 'application/json',
         }
     };
+    const performSearch = () => {
+        setSearchUserLoading(true);
+        setTimeout(() => {
+            setSearchUserLoading(false);
+            history.push(`/UserInfo/${searchQuery}`);
+        }, 1000);
+    };
+
     async function getStatistics() {
         setLoading(true);
         var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getStats`, config);
@@ -112,26 +122,6 @@ const Home = () => {
                                             <NavLink to="/AdminControl" clNavLinkssName="card-link">Admin Control</NavLink>
                                         </div>
                                     </div>
-                                    <div className="card">
-                                        <div className="card-body">
-                                            <h5 className="card-title mb-3">search for a user</h5>
-
-                                            <div>
-                                                <form action="#.html">
-                                                    <div className="input-group ">
-                                                        <input type="search" className="form-control form-control mb-3 me-2" placeholder="user id" />
-                                                        <div className="input-group-append ">
-                                                            <button type="submit" className="btn btn-danger mb-3">
-                                                                <i className="fa fa-search"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-
-
-                                        </div>
-                                    </div>
                                 </div>
                                 <div className="col-lg-6">
                                     <div className="card mb-3">
@@ -144,22 +134,26 @@ const Home = () => {
                                             <NavLink to="/GovUserControl" clNavLinkssName="card-link">Gov User Control</NavLink>
                                         </div>
                                     </div>
+                                </div>
+                                <div className="col-lg-12">
+
                                     <div className="card">
                                         <div className="card-body">
-                                            <h5 className="card-title mb-3">search for a report</h5>
+                                            <h5 className="card-title mb-3">search for a user</h5>
 
                                             <div>
-                                                <form action="#.html">
-                                                    <div className="input-group ">
-                                                        <input type="search" className="form-control form-control mb-3 me-2" placeholder="report id" />
-                                                        <div className="input-group-append ">
-                                                            <button type="submit" className="btn btn btn-primary mb-3">
-                                                                <i className="fa fa-search"></i>
-                                                            </button>
-                                                        </div>
+                                                <div className="input-group ">
+                                                    <input onChange={(e) => setSearchQuery(e.target.value)} type="search" className="form-control form-control mb-3 me-2" placeholder="user id" />
+                                                    <div className="input-group-append ">
+                                                        <button onClick={performSearch} type="submit" className="btn btn-primary mb-3">
+
+                                                            {searchUserLoading ? <i className='fas fa-spinner fa-spin'></i> : <i className="fa fa-search"></i>}
+                                                        </button>
                                                     </div>
-                                                </form>
+                                                </div>
                                             </div>
+
+
                                         </div>
                                     </div>
                                 </div>

@@ -63,7 +63,7 @@ function SignIn() {
                     var { data } = await axios.post(`http://127.0.0.1:8000/api/GovUsers/login`, admin);
                     if (data.success === true) {
                         const { password, created_at, updated_at, ...loginAdmin } = data.data.gov_user;
-                        localStorage.setItem('admin', JSON.stringify({...loginAdmin, isGovUser: true}));
+                        sessionStorage.setItem('admin', JSON.stringify({...loginAdmin, isGovUser: true}));
                         history.push('/GovReports');
                         setLoading(false);
                     }
@@ -71,7 +71,7 @@ function SignIn() {
                     var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/login`, admin);
                     if (data.success === true) {
                         const { password, created_at, updated_at, ...loginAdmin } = data.data.admin;
-                        localStorage.setItem('admin', JSON.stringify({...loginAdmin, isGovUser: false}));
+                        sessionStorage.setItem('admin', JSON.stringify({...loginAdmin, isGovUser: false}));
                         history.push('/Home');
                         setLoading(false);
                     }

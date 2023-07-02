@@ -87,7 +87,6 @@ Route::prefix('users')->group(function(){
                     Route::post('/store',[ReportController::class,'store']);
                     Route::get('/getUserReports',[ReportController::class,'getUserReports']);
                     Route::get('/getAllIncidents',[IncidentController::class,'getAllIncidents']);
-
             });
             Route::post('logout-current',[UserController::class,'logoutCurrent']);
             Route::get('getProfile',[UserController::class,'getProfile']);

@@ -41,7 +41,7 @@ class GovernmentUserController extends Controller
             'phone_number'=>$request->phone_number,
             'national_id'=>$request->national_id,
             'field'=>$request->field,
-            'department_loc'=>$request->department_loc,
+            'department_loc'=>$request->user("sanctum")->department_loc,
 
         ]);
 

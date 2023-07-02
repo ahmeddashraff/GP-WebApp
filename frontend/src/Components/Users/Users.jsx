@@ -10,7 +10,7 @@ const Users = () => {
 
     let [usersLoading, setUsersLoading] = useState(false);
 
-    let admin = JSON.parse(localStorage.getItem('admin'));
+    let admin = JSON.parse(sessionStorage.getItem('admin'));
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);

@@ -9,6 +9,8 @@ use App\Models\Report;
 use App\Services\HasMedia;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
@@ -78,7 +80,13 @@ class ReportController extends Controller
             return $this->error(['report' =>'your email is not verified'],"unauthenticated",401);
         }
 
-        $imageName = HasMedia::upload($request->file('image'),public_path('images\reports'));
+        $base64Image = $request->image;
+        $decodedImageData = base64_decode($base64Image);
+
+
+
+        $imageName = HasMedia::upload($decodedImageData,public_path('images\reports'));
+
         $report = Report::create([
             'description'=>$request->description,
             'severity'=>$request->severity,

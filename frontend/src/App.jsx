@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter as Router, Route, Switch, Routes, useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Routes, useHistory, Redirect } from 'react-router-dom';
 // import { Redirect, Route, Switch, useHistory, Routes } from "react-router";
 
 
@@ -16,26 +16,11 @@ import Users from './Components/Users/Users';
 import Profile from './Components/Profile/Profile';
 import GovReports from './Components/GovReports/GovReports';
 import GovUserControl from './Components/GovUserControl/GovUserControl';
+import { } from 'react-router-dom/cjs/react-router-dom.min';
+import axios from 'axios';
+import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
 
 function App() {
-  let history = useHistory();
-
-  // let [loginAdmin, setLoginAdmin] = useState(null);
-
-
-  // function getAdminInfo() {
-  //   let admin = localStorage.getItem('admin') || localStorage.getItem('gov_user');
-  //   setLoginAdmin(JSON.parse(admin));
-  // }
-
-
-  // useEffect(() => {
-
-  //   if (localStorage.getItem('admin') || localStorage.getItem('gov_user') ) {
-  //     getAdminInfo();
-  //   }
-  // }, []);
-
 
 
 
@@ -44,22 +29,22 @@ function App() {
       <div className="App">
         <Switch>
 
-          <Route path='/SignIn' render={(props) => <SignIn />} />
+          <Route path='/SignIn' render={() => <SignIn />} />
+          <Redirect from='/' exact to='/SignIn' />
+
           <Route>
-            <Route render={() => <Navbar />} />
+            <ProtectedRoute component={Navbar} />
             <Switch>
-              <Route path='/Home'>
-                <Home />
-              </Route>
-              <Route path='/UserInfo/:userId'>
-                <UserInfo />
-              </Route>
-              <Route path='/Reports' render={(props) => <Reports  />} />
-              <Route path='/AdminControl' render={() => <AdminControl />} />
-              <Route path='/Users' render={() => <Users />} />
-              <Route path='/Profile' render={() => <Profile />} />
-              <Route path='/GovReports' render={() => <GovReports />} />
-              <Route path='/GovUserControl' render={() => <GovUserControl />} />
+  
+              <ProtectedRoute path='/Home' component={Home} />
+              <ProtectedRoute path='/UserInfo/:userId' component={UserInfo} />
+              <ProtectedRoute path='/Reports' component={Reports} />
+              <ProtectedRoute path='/AdminControl' component={AdminControl} />
+              <ProtectedRoute path='/Users' component={Users} />
+              <ProtectedRoute path='/Profile' component={Profile} />
+              <ProtectedRoute path='/GovReports' component={GovReports} />
+              <ProtectedRoute path='/GovUserControl' component={GovUserControl} />
+
             </Switch>
           </Route>
         </Switch>
