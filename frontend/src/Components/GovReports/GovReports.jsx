@@ -86,7 +86,7 @@ const GovReports = (props) => {
     };
 
     const handleModalClose = (event) => {
-        if (event.target.className === "modal" || event.target.className === "close") {
+        if (event.target.className === "modal" || event.target.className === "close" || event.target.id == "reject") {
             setDisplayModal(false);
             setActiveModalId(null);
         }
@@ -105,7 +105,7 @@ const GovReports = (props) => {
         console.log(admin.token);
         setLoading(true);
         try {
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/getAllReportsByField/${admin.field}`, config);
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/getAllReportsByField`, config);
             if (data.success === true) {
                 setReports(data.data.reports.reverse());
                 setLoading(false);
@@ -200,6 +200,10 @@ const GovReports = (props) => {
                                             <label for="status">done</label>
                                         </div>
 
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='2' />
+                                            <label for="status">pending</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -257,7 +261,7 @@ const GovReports = (props) => {
                                                                 minute: "2-digit",
                                                                 second: "2-digit",
                                                             })}</td>
-                                                            <td className="col-2">{report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : <p className="text-warning mb-0"><strong>in progress</strong></p>}</td>
+                                                            <td className="col-2">{report.status == 2 ? <p className="text-warning mb-0"><strong>pending</strong></p> :(report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : <p className="text-secondary mb-0"><strong>in progress</strong></p>)}</td>
                                                             <td className="col-2"><i onClick={() => handleModalOpen('modal' + report.id)} data-modal={"modal" + report.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
                                                         </tr>
                                                     ))}

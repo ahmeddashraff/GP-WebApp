@@ -26,7 +26,7 @@ const Navbar = (props) => {
                     'Content-Type': 'application/json',
                 },
             };
-            let {data } = await axios.post("http://127.0.0.1:8000/api/admins/logout-current",{},config) 
+            let {data } = await axios.post(`http://127.0.0.1:8000/api/${admin.isGovUser ? 'GovUsers':'admins'}/logout-current`,{},config) 
             sessionStorage.removeItem('admin');
         }
     }

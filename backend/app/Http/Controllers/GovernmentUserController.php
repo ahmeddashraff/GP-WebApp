@@ -16,7 +16,9 @@ class GovernmentUserController extends Controller
     use ApiResponses;
     public function login(LoginRequest $request)
     {
-        $gov_user = GovernmentUser::where('email',$request->email)->first();
+        $gov_user = GovernmentUser::where('email',$request->email)->where(function ($query) {
+            $query->where('status', 1);
+        })->first();
         if(! Hash::check($request->password,$gov_user->password)){
             return $this->error(['email' => 'The provided credentials are incorrect.'],"Invalid Attempt",401);
         }

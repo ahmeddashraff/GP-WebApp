@@ -22,7 +22,16 @@ const Home = () => {
         setSearchUserLoading(true);
         setTimeout(() => {
             setSearchUserLoading(false);
-            history.push(`/UserInfo/${searchQuery}`);
+            if (isNaN(searchQuery)) {
+                alert("this is not a valid user id");
+            } else {
+                const userId = parseInt(searchQuery);
+                if (isNaN(userId)) {
+                    alert("this is not a valid user id");
+                } else {
+                    history.push(`/UserInfo/${userId}`);
+                }
+            }
         }, 1000);
     };
 

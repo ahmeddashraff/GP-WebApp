@@ -6,19 +6,23 @@ use App\Http\Requests\Admin\Auth\LoginRequest;
 use App\Http\Requests\Admin\Auth\RegisterRequest;
 use App\Http\Requests\Admin\UpdateAdminInfo;
 use App\Http\Requests\Admin\UpdateAdminStatus;
+use App\Mail\AdminRestrictionMail;
 use App\Models\Admin;
 use App\Models\Report;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
     use ApiResponses;
     public function login(LoginRequest $request)
     {
-        $admin = Admin::where('email',$request->email)->first();
+        $admin = Admin::where('email',$request->email)->where(function ($query) {
+            $query->where('status', 1);
+        })->first();
         if(! Hash::check($request->password,$admin->password)){
             return $this->error(['email' => 'The provided credentials are incorrect.'],"Invalid Attempt",401);
         }
@@ -78,7 +82,9 @@ class AdminController extends Controller
         }
         // Update the admin status
         $admin->status = $request->status;
+        Mail::to($admin->email)->send(new AdminRestrictionMail($admin->full_name, $request->status));
         $admin->update();
+
         return $this->data(compact('admin'));
     }
 

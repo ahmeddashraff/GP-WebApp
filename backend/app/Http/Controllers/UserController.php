@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\User\Auth\VerificationController;
+use App\Http\Requests\User\AddPointsRequest;
 use App\Http\Requests\User\Auth\LoginRequest;
 use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Http\Requests\User\RestrictionRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Mail\UserRestrictionMail;
 use App\Models\User;
 use App\Services\CheckIfRequestFromAdmin;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class UserController extends Controller
@@ -103,6 +106,8 @@ class UserController extends Controller
             $accessToken = PersonalAccessToken::where('tokenable_id', $id)
             ->where('tokenable_type', get_class($user))
             ->first();
+            Mail::to($user->email)->send(new UserRestrictionMail($user->full_name, "restricted until ". $user->restricted_until));
+
             if($accessToken)
             {
                 $accessToken->delete();
@@ -125,7 +130,10 @@ class UserController extends Controller
         }
         $user->status = 0;
         $user->restricted_until = null;
+
         $user->update();
+        Mail::to($user->email)->send(new UserRestrictionMail($user->full_name, "banned"));
+
         $accessToken = PersonalAccessToken::where('tokenable_id', $id)
         ->where('tokenable_type', get_class($user))
         ->first();
@@ -151,6 +159,8 @@ class UserController extends Controller
             $user->status = 1;
             $user->restricted_until = null;
             $user->update();
+            Mail::to($user->email)->send(new UserRestrictionMail($user->full_name, "unbanned"));
+
             return $this->success("user is unbanned",200);
         }
     }
@@ -175,16 +185,26 @@ class UserController extends Controller
             $user->status = 1;
             $user->restricted_until = null;
             $user->update();
+            Mail::to($user->email)->send(new UserRestrictionMail($user->full_name, "unrestricted"));
+
             return $this->success("user is unrestricted",200);
         }
     }
 
+    public function addPoints(Request $request, int $id)
+    {
+        $user = User::find($id);
+        if(!$user){
+            return $this->error(['user' => "user not found"],"Not Found",404);
+        }
+        $user->points = $user->points + $request->points;
+        $user->update();
+
+        return $this->success("points are added successfully",200);
+    }
+
     public function update(UpdateUserRequest $request)
     {
-        if($request->user('sanctum')->getTable() != "users")
-        {
-            return $this->error(['token' => 'invalid token'],"unauthorized",401);
-        }
 
         $user = User::find($request->user('sanctum')->id);
         if(!$user){

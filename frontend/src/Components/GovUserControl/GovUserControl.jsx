@@ -22,11 +22,8 @@ const GovUserControl = () => {
 
     const [editMode, setEditMode] = useState(false);
 
-    const [selectedValue, setSelectedValue] = useState('emergency');
 
-    // const handleSelectChange = (event) => {
-    //     setSelectedValue(event.target.value);
-    //   };
+    let [successMessage, setSuccessMessage] = useState(false);
 
     const [admins, setAdmins] = useState(null);
     const config = {
@@ -43,7 +40,7 @@ const GovUserControl = () => {
         full_name: '',
         phone_number: '',
         national_id: '',
-        field: 'emergency',
+        field: 'local_municipality',
         password_confirmation: '',
         department_loc: admin.department_loc
     });
@@ -173,12 +170,16 @@ const GovUserControl = () => {
                 setAdmins(updatedAdmins.reverse());
                 setAddAdminLoading(false);
                 setErrorList(null);
+                setSuccessMessage(true);
             }
             else {
+                setSuccessMessage(false);
                 setErrorList(data.errors)
             }
         } catch (error) {
             setAddAdminLoading(false);
+            setSuccessMessage(false);
+
             setErrorList(error.response.data.errors)
             console.log("axios error:", error);
         }
@@ -324,7 +325,7 @@ const GovUserControl = () => {
                                             <i class="fa-solid fa-people-group fa-lg me-3 fa-fw"></i>
                                             <div className="form-outline flex-fill mb-0">
                                                 <select onChange={getAddedAdmin} name="field" className="form-select">
-                                                    <option value="emergency">emergency</option>
+                                                    <option value="local_municipality">local municipality</option>
                                                     <option value="civil_defense">civil defense</option>
                                                 </select>
                                             </div>
@@ -356,6 +357,7 @@ const GovUserControl = () => {
                                             <button type="submit" className="btn btn-primary btn-md">{addAdminLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Add Gov User'}</button>
                                         </div>
 
+                                        {successMessage && <p className="text-success"><strong>Added Successfully</strong></p>}
                                     </form>
                                 </div>
 
@@ -445,6 +447,12 @@ const GovUserControl = () => {
                                                         <th width="30%">National ID:</th>
                                                         <td width="2%">:</td>
                                                         <td>{modalContent.national_id}</td>
+                                                    </tr>
+                                                    
+                                                    <tr>
+                                                        <th width="30%">Field:</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.field == "local_municipality" ? 'local municipality': "civil defense"}</td>
                                                     </tr>
                                                     <tr>
                                                         <th width="30%">Status:</th>

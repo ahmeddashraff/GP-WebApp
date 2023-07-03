@@ -22,15 +22,16 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
-            'full_name'=>['required'],
+            'full_name'=>['required','regex:/^(\w+\s){2}\w+$/'],
             'email'=>['required','email','unique:users'],
-            'password'=>['required',Password::defaults(),'confirmed'],
+            'password'=>['required','confirmed','regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
             'password_confirmation'=>['required'],
-            'phone_number'=>['required','unique:users'],
-            'national_id'=>['required','unique:users'],
+            'phone_number'=>['required','unique:users','regex:/^(010|011|012|015)\d{8}$/'],
+            'national_id'=>['required','unique:users','regex:/^[0-9]{14}$/'],
             'location'=>['required'],
-            'gender'=>['required'],
+            'gender'=>['required', 'in:male,female'],
             'year_of_birth'=>['required'],
 
         ];

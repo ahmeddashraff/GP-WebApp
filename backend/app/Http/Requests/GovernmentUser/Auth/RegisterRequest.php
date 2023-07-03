@@ -28,8 +28,8 @@ class RegisterRequest extends FormRequest
             'password_confirmation'=>['required'],
             'phone_number'=>['required','unique:government_users','regex:/^(010|011|012|015)\d{8}$/'],
             'national_id'=>['required','unique:government_users','regex:/^[0-9]{14}$/'],
-            'field'=>['required','in:emergency,civil_defense'],
-            'department_loc'=>['required', 'in:cairo, alexabdria, mansoura'],
+            'field'=>['required','in:local_municipality,civil_defense'],
+            'department_loc'=>['required', 'in:cairo, alexandria, mansoura'],
         ];
     }
 }

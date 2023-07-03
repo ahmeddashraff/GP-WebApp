@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./AdminControl.css";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
-import Joi from "joi";
 const AdminControl = () => {
 
     const history = useHistory();
@@ -24,7 +23,7 @@ const AdminControl = () => {
 
     const [editMode, setEditMode] = useState(false);
 
-
+    let [successMessage, setSuccessMessage] = useState(false);
 
     const [admins, setAdmins] = useState(null);
     const config = {
@@ -168,11 +167,14 @@ const AdminControl = () => {
                 setAdmins(updatedAdmins);
                 setAddAdminLoading(false);
                 setErrorList(null);
+                // alert("admin added successfully");
             }
             else {
+                setSuccessMessage(false);
                 setErrorList(data.errors)
             }
         } catch (error) {
+            setSuccessMessage(false);
             setAddAdminLoading(false);
             setErrorList(error.response.data.errors)
             console.log("axios error:", error);
@@ -370,6 +372,8 @@ const AdminControl = () => {
                                         </div>
 
                                     </form>
+                                    {successMessage && <p className="text-success"><strong>Added Successfully</strong></p>}
+
                                 </div>
 
                             </div>

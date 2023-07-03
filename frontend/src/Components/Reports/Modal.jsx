@@ -7,27 +7,59 @@ import { useHistory } from 'react-router-dom';
 const Modal = (props) => {
 
     let history = useHistory();
-    const [loading, setLoading] = useState(false);
+    const [isDoneloading, setIsDoneLoading] = useState(false);
+    const [isInProgressloading, setIsInProgressLoading] = useState(false);
+    const [rejectloading, setRejectLoading] = useState(false);
+
     const [isDone, setIsDone] = useState(props.modalContent.status == 1 ? true : false);
+    const [isPending, setIsPending] = useState(props.modalContent.status == 2 ? true : false);
+
+    const config = {
+        headers: {
+            Authorization: props.token,
+            'Content-Type': 'application/json',
+        },
+    };
+
     const goToUserProfile = () => {
         const userId = props.modalContent.user_id;
         history.push(`/UserInfo/${userId}`);
     };
 
-    async function markReportAsDone() {
-        const config = {
-            headers: {
-                Authorization: props.token,
-                'Content-Type': 'application/json',
-            },
-        };
-        setLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/markReportAsDone/${props.modalContent.id}`, config);
+    async function updateStatus(status) {
+
+        if(status == '0')
+        {
+            setIsInProgressLoading(true);
+        }
+        else{
+            setIsDoneLoading(true);
+        }
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status }, config);
         if (data.success === true) {
-            setLoading(false);
-            setIsDone(true);
+            setIsDoneLoading(false);
+            setIsInProgressLoading(false);
+            if(status == '1'){
+                setIsDone(true);
+            }
+            else
+            {
+                setIsDone(false);
+                setIsPending(false);
+            }
         }
     }
+
+    async function handleRejection(e) {
+        setRejectLoading(true);
+        var { data } = await axios.delete(`http://127.0.0.1:8000/api/GovUsers/reports/delete/${props.modalContent.id}`, config);
+        if (data.success === true) {
+            setRejectLoading(false);
+            setIsDone(true);
+            props.onClose(e);
+        }
+    }
+
 
     return (
         <div className="popup">
@@ -55,7 +87,7 @@ const Modal = (props) => {
                                         minute: "2-digit",
                                         second: "2-digit",
                                     })}</p>
-                                    <p className="mb-1"><strong>Status:</strong> {props.modalContent.status == 0 ? 'In progress' : 'done'}</p>
+                                    <p className="mb-1"><strong>Status:</strong>{props.modalContent.status == 2 ? 'pending' : (props.modalContent.status == 1 ? 'done' : 'in progress')}</p>
                                     <p className="mb-1"><strong>Severity:</strong> {props.modalContent.severity == 1 ? 'critical' : 'not critical'}</p>
                                     <p className="mb-1"><strong>Incident type:</strong> {props.modalContent.type}</p>
                                     <p className="mb-1"><strong>User Description:</strong></p>
@@ -63,9 +95,11 @@ const Modal = (props) => {
                                     {props.isGovUser ? (isDone ?
                                         <button className="btn btn-secondary mt-2" disabled>done</button>
                                         :
-                                        <button className="btn btn-secondary mt-2" onClick={markReportAsDone}>
-                                            {loading ? <i className='fas fa-spinner fa-spin'></i> : 'Mark as done'}
-                                        </button>)
+                                        (isPending ? <><button onClick={(e) => updateStatus(e.target.value)} value={0} className="btn btn-primary mt-2 me-1">{isInProgressloading ? <i className='fas fa-spinner fa-spin'></i> : 'accept'}</button>
+                                            <button className="btn btn-secondary mt-2" id="reject" onClick={handleRejection}>{rejectloading ? <i className='fas fa-spinner fa-spin'></i> : 'reject'}</button></> : <button className="btn btn-secondary mt-2" value={1} onClick={(e) => updateStatus(e.target.value)}>
+                                            {isDoneloading ? <i className='fas fa-spinner fa-spin'></i> : 'Mark as done'}
+                                        </button>))
+
                                         :
                                         <button className="btn btn-secondary mt-2" onClick={goToUserProfile}>View User Profile</button>}
 

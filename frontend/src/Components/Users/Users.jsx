@@ -66,6 +66,7 @@ const Users = () => {
         const results = users && users.filter(
             (user) =>
                 user.full_name.toLowerCase().includes(query) ||
+                user.id.toString().includes(query) ||
                 user.phone_number.toLowerCase().includes(query) ||
                 user.email.toLowerCase().includes(query) ||
                 user.national_id.toLowerCase().includes(query)

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\User\StoreReportRequest;
 use App\Http\Requests\Admin\Reports\UpdateReportRequest;
+use App\Http\Requests\Reports\UpdateReportStatusRequest;
 use App\Models\Incident;
 use App\Models\Report;
+use App\Models\User;
 use App\Services\HasMedia;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
@@ -21,14 +23,20 @@ class ReportController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $reports = Report::all();
+        $department_loc = $request->user("sanctum")->department_loc;
+        $reports = Report::where('location', $department_loc)->get();
+        if(!$reports)
+        {
+            return $this->error(['report' =>'No reports found'],"Not Found",404);
+        }
         return $this->data(compact('reports'));
     }
 
-    public function markReportAsDone(int $id)
+    public function updateStatus(UpdateReportStatusRequest $request,int $id)
     {
+
 
         // Find the admin by ID
         $report = Report::find($id);
@@ -36,24 +44,35 @@ class ReportController extends Controller
             return $this->error(['report' =>"report not found"],"Not Found",404);
         }
 
-        if($report->status == 1)
-        {
-            return $this->error(['report' => 'report is already marked as done'],"Invalid Attempt",401);
-        }
         // Update the report status
-        $report->status = 1;
+        $report->status = $request->status;
         $report->update();
 
 
-        return $this->success("Report is marked as done",200);
+        $reportsCount = Report::whereIn("status", [0,1])->where('user_id', $report->user_id)->count();
+        $countFives = (int)floor($reportsCount / 5) * 5;
+        $points =   10 * $countFives;
+
+        $user = User::findOrFail($report->user_id);
+
+        $user->points = $points;
+        $user->update();
+
+        return $this->success("Report status is changed successfully",200);
     }
 
     public function getAllReportsByField(Request $request)
     {
         $field = $request->user("sanctum")->field;
-        if($field == 'emergency')
+        if($field == 'civil_defense')
         {
-            $reports = Report::where('type', 'fire')->get();
+            $reports = Report::where('type', 'fire')->where("location",$request->user("sanctum")->department_loc )->get();
+            return $this->data(compact('reports'));
+        }
+        else if($field == 'local_municipality')
+        {
+            $types = ['fallen tree', 'pothole', 'flooding'];
+            $reports = Report::whereIn('type', $types)->where("location",$request->user("sanctum")->department_loc )->get();
             return $this->data(compact('reports'));
         }
         else

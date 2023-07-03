@@ -8,19 +8,20 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Mail\Mailables\Address;
 
-class VerificationMail extends Mailable
+class AdminRestrictionMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $verificationCode;
+    public $username;
+    public $status;
     /**
      * Create a new message instance.
      */
-    public function __construct($verificationCode)
+    public function __construct($username, $status)
     {
-        $this->verificationCode = $verificationCode;
+        $this->username = $username;
+        $this->status = $status;
     }
 
     /**
@@ -29,7 +30,7 @@ class VerificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Verification Mail'
+            subject: 'Restriction Mail',
         );
     }
 
@@ -39,7 +40,7 @@ class VerificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'Emails.VerificationMail',
+            markdown: 'Emails.AdminRestrictionMail',
         );
     }
 

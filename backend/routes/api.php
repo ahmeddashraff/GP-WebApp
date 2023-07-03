@@ -31,8 +31,10 @@ Route::prefix('GovUsers')->group(function(){
     Route::middleware(['auth:sanctum','check.gov'])->group(function(){
         Route::prefix('reports')->controller(ReportController::class)->group(function(){
             Route::get('/getAllReportsByField','getAllReportsByField');
-            Route::get('/markReportAsDone/{id}','markReportAsDone');
+            Route::put('/updateStatus/{id}','updateStatus');
+            Route::delete('/delete/{id}','delete');
         });
+        Route::post('logout-current',[GovernmentUserController::class,'logoutCurrent']);
     });
 });
 
@@ -54,6 +56,7 @@ Route::prefix('admins')->group(function(){
             Route::post('/unrestrict/{id}','unrestrict');
             Route::post('/ban/{id}','ban');
             Route::post('/unban/{id}','unban');
+            Route::put('/addPoints/{id}', 'addPoints');
         });
         Route::prefix('GovUsers')->controller(GovernmentUserController::class)->group(function(){
             Route::post('/addGovernmentUser','addGovernmentUser');
