@@ -165,8 +165,23 @@ const UserInfo = (props) => {
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
     });
-    const center = useMemo(() => ({ lat: 18.52043, lng: 73.856743 }), []);
+    const center = useMemo(() => ({ lat: 26.8206, lng: 32.8663 }), []);
+    const [map, setMap] = useState(null);
 
+    const onLoad = (map) => {
+        setMap(map);
+    };
+
+    const onUnmount = () => {
+        setMap(null);
+    };
+
+    // Only show the marker when the map is loaded
+    const showMarker = (longitude, latitude) => {
+        if (map) {
+            return <Marker position={{lat: parseFloat(latitude), lng: parseFloat(longitude)}} />;
+        }
+    };
     return (
         <section id="profile">
             {pageLoading ? <i className='page-loading fas fa-spinner fa-spin fa-3x'></i> : (
@@ -282,7 +297,7 @@ const UserInfo = (props) => {
                                             <img className="card-img-top" src={report.image}
                                                 alt="Card image cap" />
                                             <div className="card-body">
-                                                <h5 className="card-title">Report #{report.id}</h5>
+                                                <h5 className="card-title">Report #{report.report_id}</h5>
                                                 <p className="m-0"><strong>Status: </strong><span className="">{report.status == 0 ? 'In progress' : 'done'}</span></p>
                                                 <p className="m-0"><strong>Severity: </strong><span>{report.severity}</span></p>
                                                 <p className="m-0"><strong>Incident type:</strong> {report.type}</p>
@@ -316,21 +331,18 @@ const UserInfo = (props) => {
                                 <div className="contact-form">
                                     <a onClick={handleModalClose} className="close">&times;</a>
                                     <div className="popup-content">
-                
-                                        <div className="map w-100">
-                                            {!isLoaded ? (
-                                                <h1>Loading...</h1>
-                                            ) : (
-                                                <GoogleMap
-                                                    mapContainerClassName="map-container"
-                                                    center={center}
-                                                    zoom={10}>
-                                                    <Marker position={{ lat: 18.52043, lng: 73.856743 }} />
-                                                </GoogleMap>
 
-                                            )}
+                                        <div className="map w-100">
+                                            <GoogleMap
+                                                mapContainerClassName="map-container"
+                                                center={center}
+                                                zoom={5.5}
+                                                onLoad={onLoad}
+                                                onUnmount={onUnmount}
+                                            >
+                                                {showMarker(modalContent.longitude, modalContent.latitude)}
+                                            </GoogleMap>
                                         </div>
-                                        {/* <h3>type is {modalContent.longitude}</h3> */}
                                     </div>
                                 </div>
                             </div>
