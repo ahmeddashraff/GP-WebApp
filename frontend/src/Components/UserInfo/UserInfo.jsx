@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useEffect, useState } from 'react'
 import './UserInfo.css';
 // import 'bootstrap/dist/css/bootstrap.css';
 // import 'bootstrap/dist/js/bootstrap.js';
@@ -6,6 +6,7 @@ import img from '../../images/istockphoto-174662203-612x612.jpg';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useParams } from 'react-router-dom';
+import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import axios from 'axios';
 const UserInfo = (props) => {
 
@@ -25,7 +26,7 @@ const UserInfo = (props) => {
     const [userNotFound, setUserNotFound] = useState(false);
 
 
-    
+
 
 
     const { userId } = useParams();
@@ -139,14 +140,14 @@ const UserInfo = (props) => {
     let [pointInput, setPointsInput] = useState('');
     function handlePointsChange(e) {
         setPointsInput(e.target.value);
-        console.log('this is points input ',pointInput);
+        console.log('this is points input ', pointInput);
     }
 
     async function handlePoints() {
-        
+
         let points = parseInt(pointInput);
         console.log(points);
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/users/addPoints/${userId}`, {points:points}, config);
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/users/addPoints/${userId}`, { points: points }, config);
         const updatedUser = { ...user };
         updatedUser.points = points + user.points;
         setUser(updatedUser);
@@ -160,6 +161,11 @@ const UserInfo = (props) => {
     useEffect(() => {
         getUser();
     }, [restricted])
+
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+    });
+    const center = useMemo(() => ({ lat: 18.52043, lng: 73.856743 }), []);
 
     return (
         <section id="profile">
@@ -255,10 +261,10 @@ const UserInfo = (props) => {
                                             </div>
                                         </div>
                                         <div style={{ height: 18 }}></div>
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handlePointsChange}  placeholder="Enter points" type="number" className="p-1" name="points" id="points" />
-                                                <button type="submit" className="btn btn-dark ml-1 ms-2 p-1 points-btn" onClick={handlePoints}>Add points</button>
-                                            </div>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handlePointsChange} placeholder="Enter points" type="number" className="p-1" name="points" id="points" />
+                                            <button type="submit" className="btn btn-dark ml-1 ms-2 p-1 points-btn" onClick={handlePoints}>Add points</button>
+                                        </div>
                                     </div>
 
 
@@ -310,14 +316,21 @@ const UserInfo = (props) => {
                                 <div className="contact-form">
                                     <a onClick={handleModalClose} className="close">&times;</a>
                                     <div className="popup-content">
-                                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96694.72154188987!2d-73.920
-                                    47708718135!3d40.76840161175666!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c
-                                    2588f046ee661%3A0xa0b3281fcecc08c!2z2YXYp9mG2YfYp9iq2YbYjCDZhtmK2YjZitm
-                                    I2LHZg9iMINin2YTZiNmE2KfZitin2Kog2KfZhNmF2KrYrdiv2Kk!5e0!3m2!1sar!2seg!4v1629519269234!5m2!1sar!2seg" width={'100%'}
-                                            style={{ border: 0 }} allowFullScreen="" loading="lazy" className="" height="250">
-                                        </iframe>
-                                        {/* el mafrood el type dah yt3'yar le location*/}
-                                        <h3>type is {modalContent.type}</h3>
+                
+                                        <div className="map w-100">
+                                            {!isLoaded ? (
+                                                <h1>Loading...</h1>
+                                            ) : (
+                                                <GoogleMap
+                                                    mapContainerClassName="map-container"
+                                                    center={center}
+                                                    zoom={10}>
+                                                    <Marker position={{ lat: 18.52043, lng: 73.856743 }} />
+                                                </GoogleMap>
+
+                                            )}
+                                        </div>
+                                        {/* <h3>type is {modalContent.longitude}</h3> */}
                                     </div>
                                 </div>
                             </div>

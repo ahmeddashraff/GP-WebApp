@@ -11,8 +11,7 @@ use App\Models\User;
 use App\Services\HasMedia;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
+
 
 class ReportController extends Controller
 {
@@ -139,7 +138,9 @@ class ReportController extends Controller
 
     public function showByUserId(int $id)
     {
-        $reports = Report::where('user_id', $id)->get();
+        $reports = Report::join('incidents', 'reports.id', '=', 'incidents.report_id')
+        ->where('reports.user_id', $id)
+        ->get();
 
         if (!$reports) {
             return $this->error(['report' => 'No reports found by the existed id'],"Not Found",404);
