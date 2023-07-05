@@ -153,31 +153,9 @@ class ReportController extends Controller
     {
         $userId = $request->user("sanctum")->id;
         $reports = Report::where('user_id', $userId)->get();
-
         return $this->data(compact('reports'));
     }
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(int $id)
-    // {
-    //     $data = report::findOrFail($id)->only(['status','gov_user_id', 'admin_id']);
-    //     return $this->data(compact('data'));
-    // }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(UpdateReportRequest $request, string $id)
-    // {
-    //     $report = report::findOrFail($id); // select
-
-    //     $data = $request->only(['status','gov_user_id', 'admin_id']);
-
-    //     $report->update($data);
-    //     // update data into db
-    //      return $this->success("Report Updated Successfully",200);
-    // }
 
     /**
      * Remove the specified resource from storage.
