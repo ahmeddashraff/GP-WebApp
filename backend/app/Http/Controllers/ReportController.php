@@ -47,12 +47,19 @@ class ReportController extends Controller
         $report->status = $request->status;
         $report->update();
 
-
         $reportsCount = Report::whereIn("status", [0,1])->where('user_id', $report->user_id)->count();
         $countFives = (int)floor($reportsCount / 5) * 5;
         $points =   10 * $countFives;
 
         $user = User::findOrFail($report->user_id);
+
+        if($request->status==3)
+        {
+            if($request->is_fake)
+            {
+                $user->number_of_fake_reports++;
+            }
+        }
 
         $user->points = $points;
         $user->update();

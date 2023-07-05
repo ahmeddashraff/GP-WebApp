@@ -203,6 +203,8 @@ const UserInfo = (props) => {
                                                 <p className="mb-0"><strong className="pr-1">User phone:</strong> {user.phone_number}</p>
                                                 <p className="mb-0"><strong className="pr-1">User email:</strong> {user.email}</p>
                                                 <p className="mb-0"><strong className="pr-1">Number of reports:</strong> {reports && reports.length}</p>
+                                                <p className="mb-0"><strong className="pr-1">Number of fake reports:</strong> {user.number_of_fake_reports}</p>
+
                                                 <p className="mb-0">
                                                     <strong className="pr-1">Status:</strong>
                                                     {restricted ? (

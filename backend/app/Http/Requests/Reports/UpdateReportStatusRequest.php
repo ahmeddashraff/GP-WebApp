@@ -23,6 +23,7 @@ class UpdateReportStatusRequest extends FormRequest
     {
         return [
             'status'=>['required','integer','in:0,1,2,3'],
+            'is_fake'=>['required_if:status,3','boolean'],
         ];
     }
 }

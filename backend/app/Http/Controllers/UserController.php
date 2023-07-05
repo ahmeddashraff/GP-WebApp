@@ -26,11 +26,18 @@ class UserController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $user = User::where('email',$request->email)->where(function ($query) {
-            $query->where('status', 1);
-        })->first();
+        // $user = User::where('email',$request->email)->where(function ($query) {
+        //     $query->where('status', 1);
+        // })->first();
+        $user = User::where('email',$request->email);
         if( !$user || ! Hash::check($request->password,$user->password) ){
             return $this->error(['email' => 'The provided credentials are incorrect.'],"Invalid Attempt",401);
+        }
+        if( $user->status == 2){
+            return $this->error(['user' => 'you are restricted until '.$user->restricted_until],"Invalid Attempt",401);
+        }
+        if( $user->status == 0){
+            return $this->error(['user' => 'you are banned.'],"Invalid Attempt",401);
         }
         // VerificationController::send
         $token = 'Bearer '.  $user->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;

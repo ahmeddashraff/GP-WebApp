@@ -13,6 +13,9 @@ const Modal = (props) => {
 
     const [isDone, setIsDone] = useState(props.modalContent.status == 1 ? true : false);
     const [isPending, setIsPending] = useState(props.modalContent.status == 2 ? true : false);
+    const [isRejected, setIsRejected] = useState(props.modalContent.status == 3 ? true : false);
+
+    const [rejectMode, setRejectMode] = useState(false);
 
     const config = {
         headers: {
@@ -21,25 +24,38 @@ const Modal = (props) => {
         },
     };
 
+    const handleRejectClick = () => {
+        setRejectMode(true);
+    };
+
     const goToUserProfile = () => {
         const userId = props.modalContent.user_id;
         history.push(`/UserInfo/${userId}`);
     };
 
-    async function updateStatus(status) {
+    async function updateStatus(status, is_fake) {
 
         if (status == '0') {
             setIsInProgressLoading(true);
         }
+        else if (status == '3') {
+            setRejectLoading(true);
+        }
         else {
             setIsDoneLoading(true);
         }
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status }, config);
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status, is_fake: is_fake }, config);
         if (data.success === true) {
             setIsDoneLoading(false);
             setIsInProgressLoading(false);
+            setRejectLoading(false);
+
             if (status == '1') {
                 setIsDone(true);
+            }
+            else if(status== '3')
+            {
+                setIsRejected(true);
             }
             else {
                 setIsDone(false);
@@ -111,7 +127,7 @@ const Modal = (props) => {
                                         minute: "2-digit",
                                         second: "2-digit",
                                     })}</p>
-                                    <p className="mb-1"><strong>Status:</strong>{props.modalContent.status == 2 ? 'pending' : (props.modalContent.status == 1 ? 'done' : 'in progress')}</p>
+                                    <p className="mb-1"><strong>Status:</strong>{props.modalContent.status == 2 ? 'pending' : (props.modalContent.status == 1 ? 'done' : (props.modalContent.status == 3 ?'Not Approved': 'in progress'))}</p>
                                     <p className="mb-1"><strong>Severity:</strong> {props.modalContent.severity == 1 ? 'critical' : 'not critical'}</p>
                                     <p className="mb-1"><strong>Incident type:</strong> {props.modalContent.type}</p>
                                     <p className="mb-1"><strong>User Description:</strong></p>
@@ -119,10 +135,31 @@ const Modal = (props) => {
                                     {props.isGovUser ? (isDone ?
                                         <button className="btn btn-secondary mt-2" disabled>done</button>
                                         :
-                                        (isPending ? <><button onClick={(e) => updateStatus(e.target.value)} value={0} className="btn btn-primary mt-2 me-1">{isInProgressloading ? <i className='fas fa-spinner fa-spin'></i> : 'accept'}</button>
-                                            <button className="btn btn-secondary mt-2" id="reject" onClick={handleRejection}>{rejectloading ? <i className='fas fa-spinner fa-spin'></i> : 'reject'}</button></> : <button className="btn btn-secondary mt-2" value={1} onClick={(e) => updateStatus(e.target.value)}>
-                                            {isDoneloading ? <i className='fas fa-spinner fa-spin'></i> : 'Mark as done'}
-                                        </button>))
+                                        (isRejected ? <button className="btn btn-danger mt-2" disabled>rejected</button> :
+                                            (isPending ?
+                                                <>
+                                                    {!rejectMode ? (
+                                                        <>
+                                                            <button onClick={(e) => updateStatus(e.target.value)} value={0} className="btn btn-primary mt-2 me-1">
+                                                                {isInProgressloading ? <i className='fas fa-spinner fa-spin'></i> : 'accept'}
+                                                            </button>
+                                                            <button className="btn btn-secondary mt-2" onClick={handleRejectClick}>reject</button>
+                                                        </>
+                                                    ) : (
+                                                        rejectloading ? <i className='fas fa-spinner fa-spin'></i> : (
+                                                            <div className='d-flex align-items-center justify-content-start mt-1'>
+                                                                <strong>Why is it rejected? </strong>
+                                                                <button className="btn btn-secondary ms-1  me-1" id="fake" value={3} onClick={(e) => updateStatus(e.target.value, true)}>Fake</button>
+                                                                <button className="btn btn-secondary  me-1" id="na" value={3} onClick={(e) => updateStatus(e.target.value, false)}>N/A</button>
+                                                                <button className="btn btn-secondary " onClick={() => setRejectMode(false)}>Cancel</button>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </>
+                                                :
+                                                <button className="btn btn-secondary mt-2" value={1} onClick={(e) => updateStatus(e.target.value)}>
+                                                    {isDoneloading ? <i className='fas fa-spinner fa-spin'></i> : 'Mark as done'}
+                                                </button>)))
 
                                         :
                                         <button className="btn btn-secondary mt-2" onClick={goToUserProfile}>View User Profile</button>}
@@ -132,9 +169,10 @@ const Modal = (props) => {
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
 
