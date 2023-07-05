@@ -19,6 +19,7 @@ import GovUserControl from './Components/GovUserControl/GovUserControl';
 import { } from 'react-router-dom/cjs/react-router-dom.min';
 import axios from 'axios';
 import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
+import NotFound from './Components/NotFount/NotFound';
 
 function App() {
 
@@ -44,6 +45,8 @@ function App() {
               <ProtectedRoute path='/Profile' component={Profile} />
               <ProtectedRoute path='/GovReports' component={GovReports} />
               <ProtectedRoute path='/GovUserControl' component={GovUserControl} />
+          <Route path='/NotFound' Component={NotFound}/>
+          <Redirect from='*' to='/NotFound' />
 
             </Switch>
           </Route>

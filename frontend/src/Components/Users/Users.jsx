@@ -108,7 +108,7 @@ const Users = () => {
                                 <option>oldest to newest</option>
                             </select>
 
-                            <div className="nav-item dropdown ms-2">
+                            {/* <div className="nav-item dropdown ms-2">
                                 <a
                                     className="nav-link dropdown-toggle"
                                     href="#"
@@ -132,7 +132,7 @@ const Users = () => {
                                         <label for="gender">female</label>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className="rounded shadow bg-white">

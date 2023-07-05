@@ -25,7 +25,7 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $department_loc = $request->user("sanctum")->department_loc;
-        $reports = Report::where('location', $department_loc)->get();
+        $reports = Report::join('incidents', 'reports.id', '=', 'incidents.report_id')->where('reports.location', $department_loc)->get();
         if(!$reports)
         {
             return $this->error(['report' =>'No reports found'],"Not Found",404);

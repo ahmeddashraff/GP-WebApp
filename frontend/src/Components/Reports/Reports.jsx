@@ -196,7 +196,7 @@ const Reports = (props) => {
                                                 <label for="incident-type" className="mb-0">potholes</label>
                                             </div>
                                             <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='floodings' />
+                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='flooding' />
                                                 <label for="incident-type">floodings</label>
                                             </div>
                                             <div className="d-flex align-items-center mb-0">
@@ -210,6 +210,10 @@ const Reports = (props) => {
                                             </div>
                                             
                                             <strong>Status:</strong>
+                                            <div className="d-flex align-items-center">
+                                                <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='2' />
+                                                <label for="status">pending</label>
+                                            </div>
                                             <div className="d-flex align-items-center mb-0">
                                                 <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
                                                 <label for="status" className="mb-0">in progress</label>
@@ -219,6 +223,7 @@ const Reports = (props) => {
                                                 <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
                                                 <label for="status">done</label>
                                             </div>
+
 
                                     </div>
                                 </div>
@@ -231,10 +236,11 @@ const Reports = (props) => {
                                     <thead>
                                         <tr>
                                             <th scope="col" className="col-2 table-header">ID</th>
-                                            <th scope="col" className="col-3 table-header">Incident Type</th>
+                                            <th scope="col" className="col-2 table-header">Incident Type</th>
                                             <th scope="col" className="col-3 table-header">Date</th>
                                             <th scope="col" className="col-2 table-header">Status</th>
-                                            <th scope="col" className="col-2 table-header">Action</th>
+                                            <th scope="col" className="col-2 table-header">Severity</th>
+                                            <th scope="col" className="col-1 table-header">Action</th>
                                         </tr>
                                     </thead>
                                     {loading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
@@ -266,8 +272,8 @@ const Reports = (props) => {
                                                         return true;
                                                     }).map(report => (
                                                         <tr key={report.id}>
-                                                            <th scope="row" className="col-2">{report.id}</th>
-                                                            <td scope="row" className="col-3">{report.type}</td>
+                                                            <th scope="row" className="col-2">{report.report_id}</th>
+                                                            <td scope="row" className="col-2">{report.type}</td>
                                                             <td className="col-3">{new Date(report.created_at).toLocaleString("en-US", {
                                                                 year: "numeric",
                                                                 month: "2-digit",
@@ -277,7 +283,9 @@ const Reports = (props) => {
                                                                 second: "2-digit",
                                                             })}</td>
                                                             <td className="col-2">{report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 0 ?<p className="text-secondary mb-0"><strong>in progress</strong></p> : <p className="text-warning mb-0"><strong>pending</strong></p>)}</td>
-                                                            <td className="col-2"><i onClick={() => handleModalOpen('modal' + report.id)} data-modal={"modal" + report.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
+                                                            <td className="col-2">{report.severity == 1 ? <p className="text-danger mb-0"><strong>critical</strong></p> : (report.severity == 0 ?<p className="text-secondary mb-0"><strong>none</strong></p> : <p className="text-warning mb-0"><strong>not ctitical</strong></p>)}</td>
+
+                                                            <td className="col-1"><i onClick={() => handleModalOpen('modal' + report.id)} data-modal={"modal" + report.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
                                                         </tr>
                                                     ))}
                                         </tbody>

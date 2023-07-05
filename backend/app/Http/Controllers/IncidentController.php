@@ -12,8 +12,8 @@ class IncidentController extends Controller
 
     public function getAllIncidents(Request $request)
     {
-        $location = $request->user("sanctum")->location;
-        $incidents = Incident::where('location', $location)->get();
+        // $location = $request->user("sanctum")->location;
+        $incidents = Incident::where('location', $request->location)->get();
         if(!$incidents)
         {
             return $this->error(['incidents' =>'No incidents found'],"Not Found",404);

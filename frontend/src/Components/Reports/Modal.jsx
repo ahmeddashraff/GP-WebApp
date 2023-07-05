@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import img from '../../images/istockphoto-174662203-612x612.jpg';
+import React, { useMemo, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 
 
 const Modal = (props) => {
@@ -28,22 +28,20 @@ const Modal = (props) => {
 
     async function updateStatus(status) {
 
-        if(status == '0')
-        {
+        if (status == '0') {
             setIsInProgressLoading(true);
         }
-        else{
+        else {
             setIsDoneLoading(true);
         }
         var { data } = await axios.put(`http://127.0.0.1:8000/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status }, config);
         if (data.success === true) {
             setIsDoneLoading(false);
             setIsInProgressLoading(false);
-            if(status == '1'){
+            if (status == '1') {
                 setIsDone(true);
             }
-            else
-            {
+            else {
                 setIsDone(false);
                 setIsPending(false);
             }
@@ -59,7 +57,26 @@ const Modal = (props) => {
             props.onClose(e);
         }
     }
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+    });
+    const center = useMemo(() => ({ lat: 26.8206, lng: 32.8663 }), []);
+    const [map, setMap] = useState(null);
 
+    const onLoad = (map) => {
+        setMap(map);
+    };
+
+    const onUnmount = () => {
+        setMap(null);
+    };
+
+    // Only show the marker when the map is loaded
+    const showMarkerr = (longitude, latitude) => {
+        if (map) {
+            return <Marker position={{ lat: 26.310000, lng: 34.342000 }} />;
+        }
+    };
 
     return (
         <div className="popup">
@@ -69,15 +86,22 @@ const Modal = (props) => {
                     <div className="contact-form">
                         <a onClick={props.onClose} className="close">&times;</a>
                         <div className="popup-content">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96694.72154188987!2d-73.920
-                                                47708718135!3d40.76840161175666!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c
-                                                2588f046ee661%3A0xa0b3281fcecc08c!2z2YXYp9mG2YfYp9iq2YbYjCDZhtmK2YjZitm
-                                                I2LHZg9iMINin2YTZiNmE2KfZitin2Kog2KfZhNmF2KrYrdiv2Kk!5e0!3m2!1sar!2seg!4v1629519269234!5m2!1sar!2seg" width={'100%'}
-                                style={{ border: 0 }} allowFullScreen="" loading="lazy" className="" height="250">
-                            </iframe>
+                            <div className="map w-100 vh-25">
+                                {isLoaded && (<GoogleMap
+                                    mapContainerClassName="map-container"
+                                    center={center}
+                                    zoom={5.5}
+                                    onLoad={onLoad}
+                                    onUnmount={onUnmount}
+                                >
+                                    {showMarkerr(props.modalContent.longitude, props.modalContent.latitude)}
+                                </GoogleMap>
+                                )}
+
+                            </div>
                             <div className="d-flex justify-content-between align-items-center">
                                 <div className="info text-start pt-2">
-                                    <p className="mb-1"><strong>Report ID:</strong> {props.modalContent.id}</p>
+                                    <p className="mb-1"><strong>Report ID:</strong> {props.modalContent.report_id}</p>
                                     <p className="mb-1"><strong>User ID:</strong> {props.modalContent.user_id}</p>
                                     <p className="mb-1"><strong>Date:</strong> {new Date(props.modalContent.created_at).toLocaleString("en-US", {
                                         year: "numeric",
