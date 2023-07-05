@@ -29,7 +29,7 @@ class UserController extends Controller
         // $user = User::where('email',$request->email)->where(function ($query) {
         //     $query->where('status', 1);
         // })->first();
-        $user = User::where('email',$request->email);
+        $user = User::where('email',$request->email)->first();
         if( !$user || ! Hash::check($request->password,$user->password) ){
             return $this->error(['email' => 'The provided credentials are incorrect.'],"Invalid Attempt",401);
         }
