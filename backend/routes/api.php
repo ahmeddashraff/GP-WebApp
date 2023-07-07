@@ -35,6 +35,7 @@ Route::prefix('GovUsers')->group(function(){
         Route::prefix('reports')->controller(ReportController::class)->group(function(){
             Route::get('/getAllReportsByField','getAllReportsByField');
             Route::put('/updateStatus/{id}','updateStatus');
+            Route::put('/updateReportType/{id}','updateReportType');
             Route::delete('/delete/{id}','delete');
         });
         Route::post('logout-current',[GovernmentUserController::class,'logoutCurrent']);

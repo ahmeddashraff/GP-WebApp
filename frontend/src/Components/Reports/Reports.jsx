@@ -10,13 +10,11 @@ import axios from 'axios';
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 import { myGlobalVariable } from '../../globalVariables.js';
 
-// window.$ = window.jQuery = jQuery;
 
 
 const Reports = (props) => {
 
     let history = useHistory();
-
 
     const [displayModal, setDisplayModal] = useState(false);
     const [activeModalId, setActiveModalId] = useState(null);

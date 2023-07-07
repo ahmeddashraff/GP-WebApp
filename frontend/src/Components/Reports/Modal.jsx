@@ -11,12 +11,14 @@ const Modal = (props) => {
     const [isDoneloading, setIsDoneLoading] = useState(false);
     const [isInProgressloading, setIsInProgressLoading] = useState(false);
     const [rejectloading, setRejectLoading] = useState(false);
-
+    const [notApplicableLoading, setNotApplicableLoading] = useState(false);
     const [isDone, setIsDone] = useState(props.modalContent.status == 1 ? true : false);
     const [isPending, setIsPending] = useState(props.modalContent.status == 2 ? true : false);
     const [isRejected, setIsRejected] = useState(props.modalContent.status == 3 ? true : false);
+    const [isWaiting, setIsWaiting] = useState(props.modalContent.status == 4 ? true : false);
 
     const [rejectMode, setRejectMode] = useState(false);
+    const [notApplicableMode, setNotApplicableMode] = useState(false);
 
     const config = {
         headers: {
@@ -34,6 +36,16 @@ const Modal = (props) => {
         history.push(`/UserInfo/${userId}`);
     };
 
+    async function updateType(type) {
+        setRejectLoading(true);
+        var { data } = await axios.put(`http://${myGlobalVariable}/api/GovUsers/reports/updateReportType/${props.modalContent.id}`, { type: type, }, config);
+        if (data.success === true) {
+            setRejectLoading(false);
+            setRejectMode(false);
+        }
+
+    }
+
     async function updateStatus(status, is_fake) {
 
         if (status == '0') {
@@ -41,6 +53,10 @@ const Modal = (props) => {
         }
         else if (status == '3') {
             setRejectLoading(true);
+        }
+        else if(status == '2')
+        {
+            setIsInProgressLoading(true);
         }
         else {
             setIsDoneLoading(true);
@@ -50,30 +66,25 @@ const Modal = (props) => {
             setIsDoneLoading(false);
             setIsInProgressLoading(false);
             setRejectLoading(false);
-
             if (status == '1') {
                 setIsDone(true);
             }
-            else if(status== '3')
-            {
+            else if (status == '3') {
                 setIsRejected(true);
+            }
+            else if (status == '2') {
+                setIsPending(true);
+                setIsWaiting(false);
             }
             else {
                 setIsDone(false);
+                setIsWaiting(false);
                 setIsPending(false);
             }
         }
     }
 
-    async function handleRejection(e) {
-        setRejectLoading(true);
-        var { data } = await axios.delete(`http://${myGlobalVariable}/api/GovUsers/reports/delete/${props.modalContent.id}`, config);
-        if (data.success === true) {
-            setRejectLoading(false);
-            setIsDone(true);
-            props.onClose(e);
-        }
-    }
+
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
     });
@@ -128,7 +139,7 @@ const Modal = (props) => {
                                         minute: "2-digit",
                                         second: "2-digit",
                                     })}</p>
-                                    <p className="mb-1"><strong>Status:</strong>{props.modalContent.status == 2 ? 'pending' : (props.modalContent.status == 1 ? 'done' : (props.modalContent.status == 3 ?'Not Approved': 'in progress'))}</p>
+                                    <p className="mb-1"><strong>Status:</strong>{props.modalContent.status == 2 ? 'pending' : (props.modalContent.status == 1 ? 'done' : (props.modalContent.status == 3 ? 'Not Approved' : (props.modalContent.status == 4 ? 'Waiting' : 'in progress')))}</p>
                                     <p className="mb-1"><strong>Severity:</strong> {props.modalContent.severity == 1 ? 'critical' : 'not critical'}</p>
                                     <p className="mb-1"><strong>Incident type:</strong> {props.modalContent.type}</p>
                                     <p className="mb-1"><strong>User Description:</strong></p>
@@ -137,24 +148,37 @@ const Modal = (props) => {
                                         <button className="btn btn-secondary mt-2" disabled>done</button>
                                         :
                                         (isRejected ? <button className="btn btn-danger mt-2" disabled>rejected</button> :
-                                            (isPending ?
+                                            ((isPending || isWaiting) ?
                                                 <>
                                                     {!rejectMode ? (
                                                         <>
-                                                            <button onClick={(e) => updateStatus(e.target.value)} value={0} className="btn btn-primary mt-2 me-1">
-                                                                {isInProgressloading ? <i className='fas fa-spinner fa-spin'></i> : 'accept'}
+                                                            <button onClick={(e) => updateStatus(e.target.value)} value={isWaiting ? 2 : 0} className="btn btn-primary mt-2 me-1">
+                                                                {isInProgressloading ? <i className='fas fa-spinner fa-spin'></i> : (isWaiting ? 'accept' : 'start operation')}
                                                             </button>
                                                             <button className="btn btn-secondary mt-2" onClick={handleRejectClick}>reject</button>
                                                         </>
                                                     ) : (
-                                                        rejectloading ? <i className='fas fa-spinner fa-spin'></i> : (
+                                                        rejectloading ? <i className='fas fa-spinner fa-spin'></i> : ((!notApplicableMode ?
                                                             <div className='d-flex align-items-center justify-content-start mt-1'>
                                                                 <strong>Why is it rejected? </strong>
                                                                 <button className="btn btn-secondary ms-1  me-1" id="fake" value={3} onClick={(e) => updateStatus(e.target.value, true)}>Fake</button>
-                                                                <button className="btn btn-secondary  me-1" id="na" value={3} onClick={(e) => updateStatus(e.target.value, false)}>N/A</button>
+                                                                <button className="btn btn-secondary  me-1" id="na" onClick={() => setNotApplicableMode(true)}>N/A</button>
                                                                 <button className="btn btn-secondary " onClick={() => setRejectMode(false)}>Cancel</button>
                                                             </div>
-                                                        )
+                                                            :
+                                                            <div className='d-flex w-100 align-items-center justify-content-start mt-1 flex-column'>
+                                                                <strong>What is the correct type of this incident?</strong>
+                                                                <div className='d-flex justify-content-center'>
+                                                                    <button className="btn btn-secondary  me-1" value='fire' onClick={(e) => updateType(e.target.value)}>Fire</button>
+                                                                    <button className="btn btn-secondary  me-1" value='fallen tree' onClick={(e) => updateType(e.target.value)}>Fallen tree</button>
+                                                                    <button className="btn btn-secondary  me-1" value='flooding' onClick={(e) => updateType(e.target.value)}>Flooding</button>
+                                                                    <button className="btn btn-secondary  me-1" value='pothole' onClick={(e) => updateType(e.target.value)}>Pothole</button>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        ))
                                                     )}
                                                 </>
                                                 :

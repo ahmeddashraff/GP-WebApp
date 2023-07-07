@@ -17,8 +17,6 @@ class ReportController extends Controller
 {
     use ApiResponses;
 
-
-
     /**
      * Display a listing of the resource.
      */
@@ -86,17 +84,7 @@ class ReportController extends Controller
             return $this->error(['report' =>'No reports found'],"Not Found",404);
         }
     }
-    /**
-     * Show the form for creating a new resource.
-     */
-    // public function create()
-    // {
-    //     //
-    // }
 
-    // /**
-    //  * Store a newly created resource in storage.
-    //  */
     public function store(StoreReportRequest $request)
     {
 
@@ -112,13 +100,20 @@ class ReportController extends Controller
 
         $imageName = HasMedia::upload($decodedImageData,public_path('images\reports'));
 
+        $status = 2;
+        if($request->confusion)
+        {
+            $status = 4;
+        }
+
         $report = Report::create([
             'description'=>$request->description,
             'severity'=>$request->severity,
             'type'=>$request->type,
             'location'=>$request->location,
             'image'=>$imageName,
-            'user_id'=>$request->user('sanctum')->id
+            'user_id'=>$request->user('sanctum')->id,
+            'status'=>$status
         ]);
 
         Incident::create([
@@ -163,6 +158,19 @@ class ReportController extends Controller
         return $this->data(compact('reports'));
     }
 
+    public function updateReportType(Request $request,int $id)
+    {
+        $report = report::find($id);
+        if(!$report){
+            return $this->error(['report' =>"report not found"],"Not Found",404);
+        }
+
+        $report->type = $request->type;
+        $report->status = 2;
+        $report->update();
+        return $this->success("Report Updated Successfully",200);
+
+    }
 
     /**
      * Remove the specified resource from storage.

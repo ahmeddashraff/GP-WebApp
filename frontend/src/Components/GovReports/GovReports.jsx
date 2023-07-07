@@ -105,10 +105,7 @@ const GovReports = (props) => {
             setDisplayModal(false);
             setActiveModalId(null);
         }
-
     };
-
-
 
     async function getReports() {
         const config = {
@@ -278,7 +275,7 @@ const GovReports = (props) => {
                                                                 minute: "2-digit",
                                                                 second: "2-digit",
                                                             })}</td>
-                                                            <td className="col-2">{report.status == 2 ? <p className="text-warning mb-0"><strong>pending</strong></p> :(report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 3 ?<p className="text-danger mb-0"><strong>Not Approved</strong></p>:<p className="text-secondary mb-0"><strong>in progress</strong></p>))}</td>
+                                                            <td className="col-2">{report.status == 2 ? <p className="text-warning mb-0"><strong>pending</strong></p> :(report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 3 ?<p className="text-danger mb-0"><strong>Not Approved</strong></p>:(report.status == 4 ?<p className="text-danger mb-0"><strong>Waiting</strong></p> :<p className="text-secondary mb-0"><strong>in progress</strong></p>)))}</td>
                                                             <td className="col-2"><i onClick={() => handleModalOpen('modal' + report.id)} data-modal={"modal" + report.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
                                                         </tr>
                                                     ))}

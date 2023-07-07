@@ -29,6 +29,7 @@ class StoreReportRequest extends FormRequest
             'type'=>['required', 'in:fire,flooding,pothole,fallen tree'],
             'longitude' => ['required', 'numeric', 'regex:/^(-?((([1-9]\d?|1[0-7]\d)(\.\d{1,6})?)|180(\.0{1,6})?))$/'],
             'latitude' => ['required', 'numeric', 'regex:/^(-?((([1-9]\d?|1[0-7]\d)(\.\d{1,6})?)|90(\.0{1,6})?))$/'],
+            'confusion'=>['sometimes', 'boolean']
         ];
     }
 }
