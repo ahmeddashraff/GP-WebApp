@@ -14,6 +14,7 @@ use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AdminController extends Controller
 {
@@ -45,6 +46,18 @@ class AdminController extends Controller
 
     public function addAdmin(RegisterRequest $request)
     {
+        if($request->role == 'manager' && $request->user("sanctum")->role !== "owner" )
+        {
+            return $this->error(['token' => ['invalid token']],"unauthorized",401);
+        }
+
+        $department_loc = null;
+        if($request->role == 'manager')
+        {
+            $department_loc = $request->department_loc;
+        }else{
+            $department_loc = $request->user("sanctum")->department_loc;
+        }
         $admin = Admin::create([
             'full_name'=>$request->full_name,
             'email'=>$request->email,
@@ -52,7 +65,7 @@ class AdminController extends Controller
             'phone_number'=>$request->phone_number,
             'national_id'=>$request->national_id,
             'role'=>$request->role,
-            'department_loc'=>$request->user("sanctum")->department_loc,
+            'department_loc'=>$department_loc,
 
         ]);
         $token = 'Bearer '.  $admin->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
@@ -72,18 +85,44 @@ class AdminController extends Controller
         return $this->data(compact('admins'));
     }
 
+    public function getAllManagers(Request $request)
+    {
+        $admins = Admin::where('role', 'manager')->get();
+        if (!$admins) {
+            return $this->error(['admins' => 'No admins found'],"Not Found",404);
+        }
+        return $this->data(compact('admins'));
+    }
+
     public function updateAdminStatus(UpdateAdminStatus $request,int $id)
     {
-
-        // Find the admin by ID
         $admin = Admin::find($id);
         if(!$admin){
             return $this->error(['admin' => 'admin not found'],"Not Found",404);
+        }
+
+        if($request->user("sanctum")->role !== "owner" && $admin->role == 'manager')
+        {
+            return $this->error(['token' => ['invalid token']],"unauthorized",401);
         }
         // Update the admin status
         $admin->status = $request->status;
         Mail::to($admin->email)->send(new AdminRestrictionMail($admin->full_name, $request->status));
         $admin->update();
+
+        if($request->status == 0)
+        {
+
+            $accessToken = PersonalAccessToken::where('tokenable_id', $id)
+            ->where('tokenable_type', get_class($admin))
+            ->latest()
+            ->first();
+
+            if($accessToken)
+            {
+                $accessToken->delete();
+            }
+        }
 
         return $this->data(compact('admin'));
     }
@@ -112,12 +151,18 @@ class AdminController extends Controller
         return $this->data(compact('admin'));
     }
 
-    public function delete(int $id)
+    public function delete(Request $request ,int $id)
     {
         $admin = Admin::find($id); // select
         if (!$admin) {
             return $this->error(['admin' => 'admin not found'],"Not Found",404);
         }
+
+        if($request->user("sanctum")->role !== "owner" && $admin->role == "manager")
+        {
+            return $this->error(['token' => ['invalid token']],"unauthorized",401);
+        }
+
         $admin->delete();
         return $this->success("Admin Deleted Successfully",200);
     }
@@ -143,4 +188,6 @@ class AdminController extends Controller
 
         return $this->data(compact('statistics'));
     }
+
+
 }

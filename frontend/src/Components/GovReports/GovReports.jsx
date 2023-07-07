@@ -4,7 +4,10 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Modal from "../Reports/Modal";
 import './GovReports.css';
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 const GovReports = (props) => {
+
+    let history = useHistory();
 
     const [displayModal, setDisplayModal] = useState(false);
     const [activeModalId, setActiveModalId] = useState(null);
@@ -19,7 +22,15 @@ const GovReports = (props) => {
 
     let admin = JSON.parse(sessionStorage.getItem('admin'));
 
-
+    axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                history.push('/SignIn');
+            }
+            return Promise.reject(error);
+        }
+    );
 
     const handleChange = (e) => {
         // Destructuring

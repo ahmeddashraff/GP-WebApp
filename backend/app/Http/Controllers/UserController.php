@@ -112,6 +112,7 @@ class UserController extends Controller
 
             $accessToken = PersonalAccessToken::where('tokenable_id', $id)
             ->where('tokenable_type', get_class($user))
+            ->latest()
             ->first();
             Mail::to($user->email)->send(new UserRestrictionMail($user->full_name, "restricted until ". $user->restricted_until));
 
@@ -143,6 +144,7 @@ class UserController extends Controller
 
         $accessToken = PersonalAccessToken::where('tokenable_id', $id)
         ->where('tokenable_type', get_class($user))
+        ->latest()
         ->first();
         if($accessToken)
         {

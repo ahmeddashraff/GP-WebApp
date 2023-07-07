@@ -21,10 +21,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::prefix('owner')->middleware(['auth:sanctum', 'check.owner'])->group(function(){
+    Route::post('/addAdmin',[AdminController::class,'addAdmin']);
+    Route::get('/getAllManagers',[AdminController::class,'getAllManagers']);
+    Route::delete('/delete/{id}',[AdminController::class,'delete']);
+    Route::post('logout-current',[AdminController::class,'logoutCurrent']);
 
+});
 
 Route::prefix('GovUsers')->group(function(){
     Route::post('login',[GovernmentUserController::class,'login']);

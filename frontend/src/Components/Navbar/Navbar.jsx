@@ -26,7 +26,7 @@ const Navbar = (props) => {
                     'Content-Type': 'application/json',
                 },
             };
-            let {data } = await axios.post(`http://127.0.0.1:8000/api/${admin.isGovUser ? 'GovUsers':'admins'}/logout-current`,{},config) 
+            let { data } = await axios.post(`http://127.0.0.1:8000/api/${admin.isGovUser ? 'GovUsers' : (admin.role == 'owner' ? 'owner':'admins')}/logout-current`, {}, config)
             sessionStorage.removeItem('admin');
         }
     }
@@ -34,7 +34,7 @@ const Navbar = (props) => {
     return (
         <nav className='navbar position-fixed top-0 w-100 navbar-expand-lg navbar-light bg-light'>
             <div className="d-flex w-100 justify-content-around">
-                <NavLink className="navbar-brand" to={!admin.isGovUser?"/Home" : "/GovReports"}>
+                <NavLink className="navbar-brand" to={!admin.isGovUser ? "/Home" : "/GovReports"}>
                     <img src={logoImg} alt="Logo" width={75} height={60} />
                 </NavLink>
                 <button
@@ -48,29 +48,31 @@ const Navbar = (props) => {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                
+
                 <div className="collapse navbar-collapse align-items-center justify-content-end" id="navbarNavDropdown">
                     <ul className="navbar-nav">
+                        {admin.role == 'owner' ? <li className="nav-item">
+                            <NavLink className="nav-link" to="/Owner">Managers</NavLink>
+                        </li> : <>
+                            {!admin.isGovUser && <li className="nav-item">
+                                <NavLink className="nav-link" to="/Home">Home</NavLink>
+                            </li>}
 
-                        {!admin.isGovUser && <li className="nav-item">
-                            <NavLink className="nav-link" to="/Home">Home</NavLink>
-                        </li>}
-
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to={!admin.isGovUser?"/Reports" : "/GovReports"}>Reports</NavLink>
-                        </li>
-                        {!admin.isGovUser && <>
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/Users">Users</NavLink>
+                                <NavLink className="nav-link" to={!admin.isGovUser ? "/Reports" : "/GovReports"}>Reports</NavLink>
                             </li>
-                            {admin.role == 'manager' && <li className="nav-item">
-                                <NavLink className="nav-link" to="/AdminControl">Admin Control</NavLink>
-                            </li>
-                            }
-                            <li className="nav-item">
-                                <NavLink className="nav-link" to="/GovUserControl">Gov User Control</NavLink>
-                            </li></>
-                        }
+                            {!admin.isGovUser && <>
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/Users">Users</NavLink>
+                                </li>
+                                {admin.role == 'manager' && <li className="nav-item">
+                                    <NavLink className="nav-link" to="/AdminControl">Admin Control</NavLink>
+                                </li>
+                                }
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/GovUserControl">Gov User Control</NavLink>
+                                </li></>
+                            }</>}
                         <li className="nav-item dropdown">
                             <a
                                 className="nav-link dropdown-toggle"
@@ -85,15 +87,15 @@ const Navbar = (props) => {
 
                             </a>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <NavLink className="dropdown-item" to="/Profile">View Profile</NavLink>
-                                <div className="dropdown-divider"></div>
+                                {admin.role !== 'owner' && <><NavLink className="dropdown-item" to="/Profile">View Profile</NavLink>
+                                <div className="dropdown-divider"></div></>}
                                 <p className="dropdown-item text-danger mb-0 cursor-pointer" onClick={handleLogout}>Logout</p>
                             </div>
                         </li>
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav >
     );
 }
 

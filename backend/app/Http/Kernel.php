@@ -66,7 +66,7 @@ class Kernel extends HttpKernel
         'check.admin' => \App\Http\Middleware\EnsureRequestsAreFromAdmin::class,
         'check.user' => \App\Http\Middleware\EnsureRequestsAreFromUser::class,
         'check.gov' => \App\Http\Middleware\EnsureRequestsAreFromGovUser::class,
-
+        'check.owner' => \App\Http\Middleware\EnsureRequestsAreFromOwner::class,
 
     ];
 }

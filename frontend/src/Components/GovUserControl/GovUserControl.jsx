@@ -45,6 +45,15 @@ const GovUserControl = () => {
         department_loc: admin.department_loc
     });
 
+    axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                history.push('/SignIn');
+            }
+            return Promise.reject(error);
+        }
+    );
 
     const handleEditClick = () => {
         setEditMode(true);
@@ -114,45 +123,62 @@ const GovUserControl = () => {
 
     async function getAdmins() {
         setAdminsLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/GovUsers/getAllGovernmentUsersInDepartment`, config);
-        if (data.success === true) {
-            console.log(data.data);
-            setAdmins(data.data.government_users.reverse())
-            setAdminsLoading(false);
+        try {
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/GovUsers/getAllGovernmentUsersInDepartment`, config);
+            if (data.success === true) {
+                console.log(data.data);
+                setAdmins(data.data.government_users.reverse())
+                setAdminsLoading(false);
+
+            }
+        }
+        catch (error) {
 
         }
+
     }
 
     async function updateStatus(id, status) {
         const bodyRequest = { status: status };
         setModalLoading(true);
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserStatus/${id}`, bodyRequest, config);
-        if (data.success === true) {
-            const updatedModalContent = { ...modalContent };
-            updatedModalContent.status = status;
-            setModalContent(updatedModalContent);
-            setModalLoading(false);
-            const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
-            if (adminIndex !== -1) {
-                const updatedAdmins = [...admins];
-                console.log("inside update status", data);
-                console.log("inside update status", data.data.government_user);
-                updatedAdmins[adminIndex] = data.data.government_user;
-                setAdmins(updatedAdmins);
+        try {
+            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserStatus/${id}`, bodyRequest, config);
+            if (data.success === true) {
+                const updatedModalContent = { ...modalContent };
+                updatedModalContent.status = status;
+                setModalContent(updatedModalContent);
+                setModalLoading(false);
+                const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
+                if (adminIndex !== -1) {
+                    const updatedAdmins = [...admins];
+                    console.log("inside update status", data);
+                    console.log("inside update status", data.data.government_user);
+                    updatedAdmins[adminIndex] = data.data.government_user;
+                    setAdmins(updatedAdmins);
+                }
             }
+        }
+
+        catch (error) {
+
         }
     }
 
     async function deleteAdmin(id) {
         setModalLoading(true);
+        try {
+            var { data } = await axios.delete(`http://127.0.0.1:8000/api/admins/GovUsers/delete/${id}`, config);
+            if (data.success === true) {
+                const updatedAdmins = admins.filter((admin) => admin.id !== id);
+                setAdmins(updatedAdmins);
+                setModalLoading(false);
+                setDisplayModal(false);
+                setActiveModalId(null);
+            }
+        }
 
-        var { data } = await axios.delete(`http://127.0.0.1:8000/api/admins/GovUsers/delete/${id}`, config);
-        if (data.success === true) {
-            const updatedAdmins = admins.filter((admin) => admin.id !== id);
-            setAdmins(updatedAdmins);
-            setModalLoading(false);
-            setDisplayModal(false);
-            setActiveModalId(null);
+        catch (error) {
+
         }
     }
     async function formSubmit(e) {
@@ -189,18 +215,24 @@ const GovUserControl = () => {
         console.log(modalContent);
         const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
         setModalLoading(true);
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserInfo/${modalContent.id}`, bodyRequest, config);
-        if (data.success === true) {
-            // const updatedModalContent = { ...modalContent };
-            // updatedModalContent.status = status;
-            const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
-            if (adminIndex !== -1) {
-                const updatedAdmins = [...admins];
-                updatedAdmins[adminIndex] = data.data.government_user;
-                setAdmins(updatedAdmins);
+        try {
+            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserInfo/${modalContent.id}`, bodyRequest, config);
+            if (data.success === true) {
+                // const updatedModalContent = { ...modalContent };
+                // updatedModalContent.status = status;
+                const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
+                if (adminIndex !== -1) {
+                    const updatedAdmins = [...admins];
+                    updatedAdmins[adminIndex] = data.data.government_user;
+                    setAdmins(updatedAdmins);
+                }
+                setModalContent(modalContent);
+                setModalLoading(false);
             }
-            setModalContent(modalContent);
-            setModalLoading(false);
+        }
+
+        catch (error) {
+
         }
     }
 
@@ -252,19 +284,19 @@ const GovUserControl = () => {
                                     {adminsLoading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
                                         <tbody>
                                             {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).map(admin => (
-                                                    <>
-                                                        <tr key={admin.id}>
-                                                            <th scope="row" className="col-1">{admin.id}</th>
-                                                            <td className="col-3">{admin.full_name}</td>
-                                                            <td className="col-2">{admin.phone_number}</td>
-                                                            <td className="col-2">{admin.email}</td>
-                                                            <td className="col-2">{admin.national_id}</td>
+                                                <>
+                                                    <tr key={admin.id}>
+                                                        <th scope="row" className="col-1">{admin.id}</th>
+                                                        <td className="col-3">{admin.full_name}</td>
+                                                        <td className="col-2">{admin.phone_number}</td>
+                                                        <td className="col-2">{admin.email}</td>
+                                                        <td className="col-2">{admin.national_id}</td>
 
-                                                            <td className="col-2"><i onClick={() => handleModalOpen('modal' + admin.id)} data-modal={"modal" + admin.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
-                                                        </tr>
-                                                    </>
+                                                        <td className="col-2"><i onClick={() => handleModalOpen('modal' + admin.id)} data-modal={"modal" + admin.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
+                                                    </tr>
+                                                </>
 
-                                                ))}
+                                            ))}
                                         </tbody>
                                     }
 
@@ -448,11 +480,11 @@ const GovUserControl = () => {
                                                         <td width="2%">:</td>
                                                         <td>{modalContent.national_id}</td>
                                                     </tr>
-                                                    
+
                                                     <tr>
                                                         <th width="30%">Field:</th>
                                                         <td width="2%">:</td>
-                                                        <td>{modalContent.field == "local_municipality" ? 'local municipality': "civil defense"}</td>
+                                                        <td>{modalContent.field == "local_municipality" ? 'local municipality' : "civil defense"}</td>
                                                     </tr>
                                                     <tr>
                                                         <th width="30%">Status:</th>

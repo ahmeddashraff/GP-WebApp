@@ -72,7 +72,13 @@ function SignIn() {
                     if (data.success === true) {
                         const { password, created_at, updated_at, ...loginAdmin } = data.data.admin;
                         sessionStorage.setItem('admin', JSON.stringify({...loginAdmin, isGovUser: false}));
-                        history.push('/Home');
+                        if(data.data.admin.role == "owner")
+                        {
+                            history.push('/Owner');
+                        }
+                        else{
+                            history.push('/Home');
+                        }
                         setLoading(false);
                     }
                 }

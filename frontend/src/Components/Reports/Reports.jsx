@@ -7,11 +7,15 @@ import img from '../../images/istockphoto-174662203-612x612.jpg';
 import './Reports.css';
 import Modal from "./Modal";
 import axios from 'axios';
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 // window.$ = window.jQuery = jQuery;
 
 
 const Reports = (props) => {
+
+    let history = useHistory();
+
 
     const [displayModal, setDisplayModal] = useState(false);
     const [activeModalId, setActiveModalId] = useState(null);
@@ -23,6 +27,16 @@ const Reports = (props) => {
 
     const [reportFilter, setReportFilter] = useState({ severities: [], types: [], status: [] });
     let admin = JSON.parse(sessionStorage.getItem('admin'));
+
+    axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                history.push('/SignIn');
+            }
+            return Promise.reject(error);
+        }
+    );
 
     const handleChange = (e) => {
         // Destructuring
@@ -111,12 +125,18 @@ const Reports = (props) => {
         };
         console.log(admin.token);
         setLoading(true);
-
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/reports/`, config);
-        if (data.success === true) {
-            setReports(data.data.reports.reverse());
-            setLoading(false);
+        try{
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/reports/`, config);
+            if (data.success === true) {
+                setReports(data.data.reports.reverse());
+                setLoading(false);
+            }
         }
+        catch(error)
+        {
+
+        }
+
     }
 
     const handleSortChange = (event) => {

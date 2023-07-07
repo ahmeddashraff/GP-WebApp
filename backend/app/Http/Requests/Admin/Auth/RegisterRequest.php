@@ -30,7 +30,7 @@ class RegisterRequest extends FormRequest
             'phone_number'=>['required','unique:admins','regex:/^(010|011|012|015)\d{8}$/'],
             'national_id'=>['required','unique:admins','regex:/^[0-9]{14}$/'],
             'role'=>['required','in:admin,manager'],
-            // 'department_loc'=>['sometimes', 'in:cairo, alexandria, mansoura'],
+            'department_loc'=>['sometimes', 'in:cairo,alexandria,mansoura'],
         ];
     }
 }

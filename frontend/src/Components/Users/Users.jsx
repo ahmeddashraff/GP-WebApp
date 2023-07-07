@@ -26,6 +26,16 @@ const Users = () => {
     const [userFilter, setUserFilter] = useState({ genders: [] });
 
 
+    axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                history.push('/SignIn');
+            }
+            return Promise.reject(error);
+        }
+    );
+
     const goToUserProfile = (userId) => {
         history.push(`/UserInfo/${userId}`);
     };
@@ -77,11 +87,17 @@ const Users = () => {
 
     async function getUsers() {
         setUsersLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/users/`, config);
-        if (data.success === true) {
-            setUsers(data.data.users.reverse())
-            setUsersLoading(false);
-
+        try{
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/users/`, config);
+            if (data.success === true) {
+                setUsers(data.data.users.reverse())
+                setUsersLoading(false);
+    
+            }
+        }
+        catch(error)
+        {
+            
         }
     }
 

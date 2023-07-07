@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureRequestsAreFromAdmin
+class EnsureRequestsAreFromOwner
 {
     use ApiResponses;
     /**
@@ -22,7 +22,7 @@ class EnsureRequestsAreFromAdmin
 
 
         // Compare the table name with the expected value
-        if ($tableName !== 'admins' || $role == 'owner') {
+        if ($tableName !== 'admins' || $role !== 'owner') {
             return $this->error(['token' => ['invalid token']],"unauthorized",401);
         }
 

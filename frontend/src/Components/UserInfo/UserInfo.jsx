@@ -8,6 +8,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useParams } from 'react-router-dom';
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import axios from 'axios';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 const UserInfo = (props) => {
 
     const [displayModal, setDisplayModal] = useState(false);
@@ -26,7 +27,7 @@ const UserInfo = (props) => {
     const [userNotFound, setUserNotFound] = useState(false);
 
 
-
+    let history = useHistory();
 
 
     const { userId } = useParams();
@@ -40,6 +41,16 @@ const UserInfo = (props) => {
             'Content-Type': 'application/json',
         },
     };
+
+    axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                history.push('/SignIn');
+            }
+            return Promise.reject(error);
+        }
+    );
 
     const handleModalOpen = (modalId, e) => {
         console.log(e.target.id)
@@ -88,8 +99,13 @@ const UserInfo = (props) => {
     }
 
     async function getUserReports() {
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/reports/getUserReports/${userId}`, config);
-        setReports(data.data.reports)
+        try {
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/reports/getUserReports/${userId}`, config);
+            setReports(data.data.reports)
+        }
+        catch (error) {
+
+        }
     }
 
     async function handleRestriction(event) {
@@ -97,44 +113,65 @@ const UserInfo = (props) => {
         setRestrictLoading(true);
         const selectedValue = event.target.elements.restriction_period.value;
         let restrictionPeriod = { restriction_period: selectedValue }
-        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/restrict/${userId}`, restrictionPeriod, config);
-        setRestrictLoading(false);
-        const updatedUser = { ...user };
-        updatedUser.status = 2;
-        setUser(updatedUser);
-        setRestricted(true);
-        setBanned(false);
+        try {
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/restrict/${userId}`, restrictionPeriod, config);
+            setRestrictLoading(false);
+            const updatedUser = { ...user };
+            updatedUser.status = 2;
+            setUser(updatedUser);
+            setRestricted(true);
+            setBanned(false);
+        }
+        catch (error) {
+
+        }
     }
     async function handleUnrestriction() {
         setRestrictLoading(true);
-        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unrestrict/${userId}`, {}, config);
-        const updatedUser = { ...user };
-        setRestrictLoading(false);
-        updatedUser.status = 1;
-        setUser(updatedUser);
-        setRestricted(false);
-        setBanned(false);
+        try {
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unrestrict/${userId}`, {}, config);
+            const updatedUser = { ...user };
+            setRestrictLoading(false);
+            updatedUser.status = 1;
+            setUser(updatedUser);
+            setRestricted(false);
+            setBanned(false);
+        }
+        catch (error) {
+
+        }
     }
 
     async function handleBanning() {
         setBanLoading(true);
-        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/ban/${userId}`, {}, config);
-        setBanLoading(false);
-        const updatedUser = { ...user };
-        updatedUser.status = 0;
-        setUser(updatedUser);
-        setBanned(true);
-        setRestricted(false);
+        try {
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/ban/${userId}`, {}, config);
+            setBanLoading(false);
+            const updatedUser = { ...user };
+            updatedUser.status = 0;
+            setUser(updatedUser);
+            setBanned(true);
+            setRestricted(false);
+        }
+        catch (error) {
+
+        }
     }
     async function handleUnbanning() {
         setBanLoading(true);
-        var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unban/${userId}`, {}, config);
-        setBanLoading(false);
-        const updatedUser = { ...user };
-        updatedUser.status = 1;
-        setUser(updatedUser);
-        setBanned(false);
-        setRestricted(false)
+        try {
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unban/${userId}`, {}, config);
+            setBanLoading(false);
+            const updatedUser = { ...user };
+            updatedUser.status = 1;
+            setUser(updatedUser);
+            setBanned(false);
+            setRestricted(false)
+        }
+
+        catch (error) {
+
+        }
     }
 
     let [pointInput, setPointsInput] = useState('');
@@ -144,13 +181,18 @@ const UserInfo = (props) => {
     }
 
     async function handlePoints() {
+        try {
+            let points = parseInt(pointInput);
+            console.log(points);
+            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/users/addPoints/${userId}`, { points: points }, config);
+            const updatedUser = { ...user };
+            updatedUser.points = points + user.points;
+            setUser(updatedUser);
+        }
 
-        let points = parseInt(pointInput);
-        console.log(points);
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/users/addPoints/${userId}`, { points: points }, config);
-        const updatedUser = { ...user };
-        updatedUser.points = points + user.points;
-        setUser(updatedUser);
+        catch (error) {
+
+        }
     }
 
     useEffect(() => {
@@ -179,7 +221,7 @@ const UserInfo = (props) => {
     // Only show the marker when the map is loaded
     const showMarker = (longitude, latitude) => {
         if (map) {
-            return <Marker position={{lat: parseFloat(latitude), lng: parseFloat(longitude)}} />;
+            return <Marker position={{ lat: parseFloat(latitude), lng: parseFloat(longitude) }} />;
         }
     };
     return (

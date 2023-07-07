@@ -18,6 +18,17 @@ const Home = () => {
             'Content-Type': 'application/json',
         }
     };
+
+    axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                history.push('/SignIn');
+            }
+            return Promise.reject(error);
+        }
+    );
+
     const performSearch = () => {
         setSearchUserLoading(true);
         setTimeout(() => {
@@ -37,12 +48,18 @@ const Home = () => {
 
     async function getStatistics() {
         setLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getStats`, config);
-        if (data.success === true) {
-            console.log(data.data.statistics);
-            setStatistics(data.data.statistics);
-            console.log(statistics);
-            setLoading(false);
+        try{
+            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getStats`, config);
+            if (data.success === true) {
+                console.log(data.data.statistics);
+                setStatistics(data.data.statistics);
+                console.log(statistics);
+                setLoading(false);
+            }
+        }
+        catch(error)
+        {
+            
         }
     }
     useEffect(() => {

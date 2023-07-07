@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import "./AdminControl.css";
+import "./Owner.css";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
-const AdminControl = () => {
+const Owner = () => {
 
     const history = useHistory();
 
@@ -39,26 +39,12 @@ const AdminControl = () => {
         full_name: ' ',
         phone_number: ' ',
         national_id: ' ',
-        role: 'admin',
+        role: 'manager',
         password_confirmation: '',
     });
 
 
 
-    const handleEditClick = () => {
-        setEditMode(true);
-    };
-
-
-    axios.interceptors.response.use(
-        (response) => response,
-        (error) => {
-            if (error.response && error.response.status === 401) {
-                history.push('/SignIn');
-            }
-            return Promise.reject(error);
-        }
-    );
 
     const performSearch = () => {
         const query = searchQuery.toLowerCase();
@@ -125,60 +111,25 @@ const AdminControl = () => {
 
     async function getAdmins() {
         setAdminsLoading(true);
-        try {
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getAllAdminsInDepartment`, config);
-            if (data.success === true) {
-                setAdmins(data.data.admins.reverse())
-                setAdminsLoading(false);
-            }
-        } catch (error) {
-
+        var { data } = await axios.get(`http://127.0.0.1:8000/api/owner/getAllManagers`, config);
+        if (data.success === true) {
+            setAdmins(data.data.admins.reverse())
+            setAdminsLoading(false);
         }
-
     }
 
-    async function updateStatus(id, status) {
-        const bodyRequest = { status: status };
-        setModalLoading(true);
-        try {
-            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminStatus/${id}`, bodyRequest, config);
-            if (data.success === true) {
-                const updatedModalContent = { ...modalContent };
-                updatedModalContent.status = status;
-                setModalContent(updatedModalContent);
-                setModalLoading(false);
-                const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
-                if (adminIndex !== -1) {
-                    const updatedAdmins = [...admins];
-                    updatedAdmins[adminIndex] = data.data.admin;
-                    setAdmins(updatedAdmins);
-                }
-            }
-        }
-        catch (error) {
-
-        }
-
-    }
 
     async function deleteAdmin(id) {
         setModalLoading(true);
 
-        try {
-            var { data } = await axios.delete(`http://127.0.0.1:8000/api/admins/delete/${id}`, config);
-            if (data.success === true) {
-                const updatedAdmins = admins.filter((admin) => admin.id !== id);
-                setAdmins(updatedAdmins);
-                setModalLoading(false);
-                setDisplayModal(false);
-                setActiveModalId(null);
-            }
-
-        }catch(error)
-        {
-
+        var { data } = await axios.delete(`http://127.0.0.1:8000/api/owner/delete/${id}`, config);
+        if (data.success === true) {
+            const updatedAdmins = admins.filter((admin) => admin.id !== id);
+            setAdmins(updatedAdmins);
+            setModalLoading(false);
+            setDisplayModal(false);
+            setActiveModalId(null);
         }
-
     }
     async function formSubmit(e) {
         e.preventDefault();
@@ -188,13 +139,14 @@ const AdminControl = () => {
             console.log(addedAdmin);
             const { first_name, middle_name, last_name, ...addAdminRequest } = addedAdmin;
             console.log(addAdminRequest);
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/addAdmin`, addAdminRequest, config);
+            var { data } = await axios.post(`http://127.0.0.1:8000/api/owner/addAdmin`, addAdminRequest, config);
             console.log(data);
             if (data.success === true) {
                 const updatedAdmins = [...admins, data.data.admin];
                 setAdmins(updatedAdmins);
                 setAddAdminLoading(false);
                 setErrorList(null);
+                // alert("admin added successfully");
             }
             else {
                 setSuccessMessage(false);
@@ -204,7 +156,7 @@ const AdminControl = () => {
             setSuccessMessage(false);
             setAddAdminLoading(false);
             setErrorList(error.response.data.errors)
-            console.log("axios error:", error.request.error);
+            console.log("axios error:", error);
         }
     }
 
@@ -212,26 +164,19 @@ const AdminControl = () => {
         console.log(modalContent);
         const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
         setModalLoading(true);
-        try{
-            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
-            if (data.success === true) {
-                // const updatedModalContent = { ...modalContent };
-                // updatedModalContent.status = status;
-                const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
-                if (adminIndex !== -1) {
-                    const updatedAdmins = [...admins];
-                    updatedAdmins[adminIndex] = data.data.admin;
-                    setAdmins(updatedAdmins);
-                }
-                setModalContent(modalContent);
-                setModalLoading(false);
+        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
+        if (data.success === true) {
+            // const updatedModalContent = { ...modalContent };
+            // updatedModalContent.status = status;
+            const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
+            if (adminIndex !== -1) {
+                const updatedAdmins = [...admins];
+                updatedAdmins[adminIndex] = data.data.admin;
+                setAdmins(updatedAdmins);
             }
+            setModalContent(modalContent);
+            setModalLoading(false);
         }
-        catch(error)
-        {
-
-        }
-
     }
 
     useEffect(() => {
@@ -254,7 +199,7 @@ const AdminControl = () => {
                 <div className="row g-0">
                     <div className="col-lg-10 mx-auto">
                         <div className="d-flex justify-content-between align-items-center search">
-                            <input type="text" className="form-control w-25" placeholder="search for an admin" value={searchQuery}
+                            <input type="text" className="form-control w-25" placeholder="search for a manager" value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)} />
                             <div className="d-flex justify-content-center align-items-center">
                                 <label className="me-1 w-50"><strong>Sort By:</strong> </label>
@@ -304,7 +249,7 @@ const AdminControl = () => {
 
 
                         <div className="add-admin mt-5 mb-5">
-                            <h2>Do you want to add an admin?</h2>
+                            <h2>Do you want to add a manager?</h2>
                             <div className="d-flex justify-content-center">
                                 <div className="mt-3 form-content w-100 rounded shadow bg-light">
                                     <form className="mx-1 mx-md-4" onSubmit={formSubmit}>
@@ -348,9 +293,19 @@ const AdminControl = () => {
                                             <div className="form-outline flex-fill mb-0">
                                                 <input onChange={getAddedAdmin} name="national_id" type="text" className="form-control" />
                                                 {errorList && (errorList.national_id && <div className="error-alert">{errorList.national_id[0]}</div>)}
-
                                             </div>
+                                        </div>
 
+                                        <div className="d-flex flex-row align-items-center mb-4">
+                                            <i class="fa-solid fa-people-group fa-lg me-3 fa-fw"></i>
+                                            <div className="form-outline flex-fill mb-0">
+                                                <select onChange={getAddedAdmin} name="department_loc" className="form-select">
+                                                    <option value="cairo">cairo</option>
+                                                    <option value="alexandria">alexandria</option>
+                                                    <option value="mansoura">mansoura</option>
+
+                                                </select>
+                                            </div>
                                         </div>
 
                                         <div className="d-flex flex-row align-items-center mb-4">
@@ -376,7 +331,7 @@ const AdminControl = () => {
                                         </div>
 
                                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                            <button type="submit" className="btn btn-primary btn-md">{addAdminLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Add Admin'}</button>
+                                            <button type="submit" className="btn btn-primary btn-md">{addAdminLoading ? <i className='fas fa-spinner fa-spin'></i> : 'Add Manager'}</button>
                                         </div>
 
                                     </form>
@@ -414,155 +369,39 @@ const AdminControl = () => {
                                                         <td width="2%">:</td>
                                                         <td>{modalContent.full_name}</td>
                                                     </tr>
-                                                    {editMode ? (
-                                                        <>
-                                                            <tr>
-                                                                <th width="30%">Phone Number</th>
-                                                                <td width="2%">:</td>
-                                                                <td>
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control p-0 my-1 bg-light text-center"
-                                                                        value={modalContent.phone_number}
-                                                                        onChange={(e) =>
-                                                                            setModalContent({
-                                                                                ...modalContent,
-                                                                                phone_number: e.target.value,
-                                                                            })
-                                                                        }
-                                                                    />
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th width="30%">Email</th>
-                                                                <td width="2%">:</td>
-                                                                <td>
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control p-0 my-1 bg-light text-center"
-                                                                        value={modalContent.email}
-                                                                        onChange={(e) =>
-                                                                            setModalContent({
-                                                                                ...modalContent,
-                                                                                email: e.target.value,
-                                                                            })
-                                                                        }
-                                                                    />
-                                                                </td>
-                                                            </tr>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <tr>
-                                                                <th width="30%">Phone Number</th>
-                                                                <td width="2%">:</td>
-                                                                <td>{modalContent.phone_number}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th width="30%">Email</th>
-                                                                <td width="2%">:</td>
-                                                                <td>{modalContent.email}</td>
-                                                            </tr>
-                                                        </>
-                                                    )}
-
+                                                    
+                                                    <tr>
+                                                        <th width="30%">Phone Number</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.phone_number}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th width="30%">Email</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.email}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th width="30%">department location</th>
+                                                        <td width="2%">:</td>
+                                                        <td>{modalContent.department_loc}</td>
+                                                    </tr>
                                                     <tr>
                                                         <th width="30%">National ID:</th>
                                                         <td width="2%">:</td>
                                                         <td>{modalContent.national_id}</td>
                                                     </tr>
-                                                    <tr>
-                                                        <th width="30%">Status:</th>
-                                                        <td width="2%">:</td>
-                                                        <td>{modalContent.status == 0 ? <strong className="text-danger p-0">deactivated</strong> : <strong className="p-0 text-success">active</strong>}</td>
-                                                    </tr>
+
                                                     <tr>
                                                         <th width="30%">Employed at:</th>
                                                         <td width="2%">:</td>
                                                         <td>{modalContent.created_at && modalContent.created_at.split('T').slice(0, 1).join(' ')}</td>
                                                     </tr>
-                                                    {editMode &&
-                                                        <tr>
-                                                            <th width="30%">Password:</th>
-                                                            <td width="2%">:</td>
-                                                            <td>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control p-0 my-1 bg-light text-center"
-
-                                                                    onChange={(e) => {
-                                                                        setModalContent({
-                                                                            ...modalContent,
-                                                                            password: e.target.value,
-                                                                        });
-                                                                        console.log("inside password", modalContent);
-                                                                    }
-                                                                    }
-                                                                />
-                                                            </td>
-                                                        </tr>
-                                                    }
                                                 </table>
                                                 <div>
                                                     <h5><strong>Available Actions:</strong></h5>
                                                     <div className="actions">
-                                                        <div className="d-flex justify-content-center align-items-center">
-
-                                                            {modalContent.status == 0 ?
-                                                                <>
-                                                                    <div className="text">User is deactivated, do you want to activate?</div>
-                                                                    <button className="btn btn-success w-25" name="status" onClick={() => { updateStatus(modalContent.id, 1) }}>activate</button></>
-                                                                :
-                                                                <>
-                                                                    <div className="text">User is activated, do you want to deactivate?</div>
-                                                                    <button name="status" onClick={() => { updateStatus(modalContent.id, 0) }} className="status btn btn-danger w-25">deactivate</button>
-                                                                </>}
-                                                        </div>
                                                         <div className="mt-2 d-flex justify-content-center align-items-center">
-                                                            <div className="text">Do you want to delete the user?</div> <button name="deleteBtn" onClick={() => { deleteAdmin(modalContent.id); getAdmins(); }} className="btn btn-danger w-25">delete</button>
-                                                        </div>
-                                                        <div className="mt-2 d-flex justify-content-center align-items-center">
-                                                            {!editMode ? (
-                                                                <div className="text">Do you want to edit the user?</div>
-                                                            ) : <div className="text-end ">Do you want to save changes?</div>
-                                                            }
-                                                            {!editMode ? (
-                                                                <button
-                                                                    name="editBtn"
-                                                                    className="btn btn-secondary w-25"
-                                                                    onClick={handleEditClick}
-                                                                >
-                                                                    Edit
-                                                                </button>
-                                                            ) : (
-                                                                <div className="w-50 d-flex justify-content-center">
-                                                                    <div className="d-flex justify-content-center w-50">
-
-                                                                        <button
-                                                                            name="saveBtn"
-                                                                            className="btn btn-secondary w-50 me-2"
-                                                                            onClick={() => {
-                                                                                setEditMode(false);
-                                                                            }}
-                                                                        >
-                                                                            Cancel
-                                                                        </button>
-                                                                        <button
-                                                                            name="saveBtn"
-                                                                            className="btn btn-primary w-50"
-                                                                            onClick={() => {
-                                                                                // Save the updated admin info
-                                                                                saveAdminInfo(modalContent);
-                                                                                setEditMode(false);
-                                                                            }}
-                                                                        >
-                                                                            Save
-                                                                        </button>
-                                                                    </div>
-
-                                                                </div>
-
-                                                            )}
+                                                            <div className="text">Do you want to delete the manager?</div> <button name="deleteBtn" onClick={() => { deleteAdmin(modalContent.id); getAdmins(); }} className="btn btn-danger w-25">delete</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -581,4 +420,4 @@ const AdminControl = () => {
         </section>);
 }
 
-export default AdminControl;
+export default Owner;
