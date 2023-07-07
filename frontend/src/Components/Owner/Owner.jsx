@@ -302,9 +302,10 @@ const Owner = () => {
                                             <i class="fa-solid fa-people-group fa-lg me-3 fa-fw"></i>
                                             <div className="form-outline flex-fill mb-0">
                                                 <select onChange={getAddedAdmin} name="department_loc" className="form-select">
-                                                    <option value="cairo">cairo</option>
-                                                    <option value="alexandria">alexandria</option>
-                                                    <option value="mansoura">mansoura</option>
+                                                    <option value="cairo">Cairo</option>
+                                                    <option value="alexandria">Alexandria</option>
+                                                    <option value="mansoura">Mansoura</option>
+                                                    <option value="giza">Giza</option>
 
                                                 </select>
                                             </div>

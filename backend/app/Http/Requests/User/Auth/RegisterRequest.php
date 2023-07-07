@@ -22,7 +22,6 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
-
         return [
             'full_name'=>['required','regex:/^(\w+\s){2}\w+$/'],
             'email'=>['required','email','unique:users'],
@@ -32,8 +31,7 @@ class RegisterRequest extends FormRequest
             'national_id'=>['required','unique:users','regex:/^[0-9]{14}$/'],
             'location'=>['required'],
             'gender'=>['required', 'in:male,female'],
-            'year_of_birth'=>['required'],
-
+            'year_of_birth'=>['required','regex:/^(19[0-9]{2}|2[0-9]{3})$/'],
         ];
     }
 }
