@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import "./Users.css";
+import { myGlobalVariable } from '../../globalVariables.js';
 
 const Users = () => {
 
@@ -88,7 +89,7 @@ const Users = () => {
     async function getUsers() {
         setUsersLoading(true);
         try{
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/users/`, config);
+            var { data } = await axios.get(`http://${myGlobalVariable}/api/admins/users/`, config);
             if (data.success === true) {
                 setUsers(data.data.users.reverse())
                 setUsersLoading(false);

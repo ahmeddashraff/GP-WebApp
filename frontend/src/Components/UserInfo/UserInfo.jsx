@@ -9,6 +9,8 @@ import { useParams } from 'react-router-dom';
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import axios from 'axios';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { myGlobalVariable } from '../../globalVariables.js';
+
 const UserInfo = (props) => {
 
     const [displayModal, setDisplayModal] = useState(false);
@@ -80,7 +82,7 @@ const UserInfo = (props) => {
     async function getUser() {
         try {
             setPageLoading(true);
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/users/show/${userId}`, config);
+            var { data } = await axios.get(`http://${myGlobalVariable}/api/admins/users/show/${userId}`, config);
             if (data.data.user.status == 0) {
                 setBanned(true);
             }
@@ -100,7 +102,7 @@ const UserInfo = (props) => {
 
     async function getUserReports() {
         try {
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/reports/getUserReports/${userId}`, config);
+            var { data } = await axios.get(`http://${myGlobalVariable}/api/admins/reports/getUserReports/${userId}`, config);
             setReports(data.data.reports)
         }
         catch (error) {
@@ -114,7 +116,7 @@ const UserInfo = (props) => {
         const selectedValue = event.target.elements.restriction_period.value;
         let restrictionPeriod = { restriction_period: selectedValue }
         try {
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/restrict/${userId}`, restrictionPeriod, config);
+            var { data } = await axios.post(`http://${myGlobalVariable}/api/admins/users/restrict/${userId}`, restrictionPeriod, config);
             setRestrictLoading(false);
             const updatedUser = { ...user };
             updatedUser.status = 2;
@@ -129,7 +131,7 @@ const UserInfo = (props) => {
     async function handleUnrestriction() {
         setRestrictLoading(true);
         try {
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unrestrict/${userId}`, {}, config);
+            var { data } = await axios.post(`http://${myGlobalVariable}/api/admins/users/unrestrict/${userId}`, {}, config);
             const updatedUser = { ...user };
             setRestrictLoading(false);
             updatedUser.status = 1;
@@ -145,7 +147,7 @@ const UserInfo = (props) => {
     async function handleBanning() {
         setBanLoading(true);
         try {
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/ban/${userId}`, {}, config);
+            var { data } = await axios.post(`http://${myGlobalVariable}/api/admins/users/ban/${userId}`, {}, config);
             setBanLoading(false);
             const updatedUser = { ...user };
             updatedUser.status = 0;
@@ -160,7 +162,7 @@ const UserInfo = (props) => {
     async function handleUnbanning() {
         setBanLoading(true);
         try {
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/users/unban/${userId}`, {}, config);
+            var { data } = await axios.post(`http://${myGlobalVariable}/api/admins/users/unban/${userId}`, {}, config);
             setBanLoading(false);
             const updatedUser = { ...user };
             updatedUser.status = 1;
@@ -184,7 +186,7 @@ const UserInfo = (props) => {
         try {
             let points = parseInt(pointInput);
             console.log(points);
-            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/users/addPoints/${userId}`, { points: points }, config);
+            var { data } = await axios.put(`http://${myGlobalVariable}/api/admins/users/addPoints/${userId}`, { points: points }, config);
             const updatedUser = { ...user };
             updatedUser.points = points + user.points;
             setUser(updatedUser);

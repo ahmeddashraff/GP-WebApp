@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./Owner.css";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { myGlobalVariable } from '../../globalVariables.js';
+
 const Owner = () => {
 
     const history = useHistory();
@@ -111,7 +113,7 @@ const Owner = () => {
 
     async function getAdmins() {
         setAdminsLoading(true);
-        var { data } = await axios.get(`http://127.0.0.1:8000/api/owner/getAllManagers`, config);
+        var { data } = await axios.get(`http://${myGlobalVariable}/api/owner/getAllManagers`, config);
         if (data.success === true) {
             setAdmins(data.data.admins.reverse())
             setAdminsLoading(false);
@@ -122,7 +124,7 @@ const Owner = () => {
     async function deleteAdmin(id) {
         setModalLoading(true);
 
-        var { data } = await axios.delete(`http://127.0.0.1:8000/api/owner/delete/${id}`, config);
+        var { data } = await axios.delete(`http://${myGlobalVariable}/api/owner/delete/${id}`, config);
         if (data.success === true) {
             const updatedAdmins = admins.filter((admin) => admin.id !== id);
             setAdmins(updatedAdmins);
@@ -139,7 +141,7 @@ const Owner = () => {
             console.log(addedAdmin);
             const { first_name, middle_name, last_name, ...addAdminRequest } = addedAdmin;
             console.log(addAdminRequest);
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/owner/addAdmin`, addAdminRequest, config);
+            var { data } = await axios.post(`http://${myGlobalVariable}/api/owner/addAdmin`, addAdminRequest, config);
             console.log(data);
             if (data.success === true) {
                 const updatedAdmins = [...admins, data.data.admin];
@@ -164,7 +166,7 @@ const Owner = () => {
         console.log(modalContent);
         const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
         setModalLoading(true);
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
+        var { data } = await axios.put(`http://${myGlobalVariable}/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
         if (data.success === true) {
             // const updatedModalContent = { ...modalContent };
             // updatedModalContent.status = status;

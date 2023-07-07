@@ -5,6 +5,8 @@ import { useState } from "react";
 import Modal from "../Reports/Modal";
 import './GovReports.css';
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { myGlobalVariable } from '../../globalVariables.js';
+
 const GovReports = (props) => {
 
     let history = useHistory();
@@ -118,7 +120,7 @@ const GovReports = (props) => {
         console.log(admin.token);
         setLoading(true);
         try {
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/GovUsers/reports/getAllReportsByField`, config);
+            var { data } = await axios.get(`http://${myGlobalVariable}/api/GovUsers/reports/getAllReportsByField`, config);
             if (data.success === true) {
                 setReports(data.data.reports.reverse());
                 setLoading(false);

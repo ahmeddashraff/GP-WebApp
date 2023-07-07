@@ -7,8 +7,7 @@ import { useHistory } from 'react-router-dom';
 import './SignIn.css';
 import Joi from 'joi';
 import '@fortawesome/fontawesome-free/css/all.css';
-
-
+import { myGlobalVariable } from '../../globalVariables.js';
 function SignIn() {
 
 
@@ -60,7 +59,7 @@ function SignIn() {
                 console.log('inside form submitt', isChecked)
 
                 if (isChecked) {
-                    var { data } = await axios.post(`http://127.0.0.1:8000/api/GovUsers/login`, admin);
+                    var { data } = await axios.post(`http://${myGlobalVariable}/api/GovUsers/login`, admin);
                     if (data.success === true) {
                         const { password, created_at, updated_at, ...loginAdmin } = data.data.gov_user;
                         sessionStorage.setItem('admin', JSON.stringify({...loginAdmin, isGovUser: true}));
@@ -68,7 +67,7 @@ function SignIn() {
                         setLoading(false);
                     }
                 } else {
-                    var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/login`, admin);
+                    var { data } = await axios.post(`http://${myGlobalVariable}/api/admins/login`, admin);
                     if (data.success === true) {
                         const { password, created_at, updated_at, ...loginAdmin } = data.data.admin;
                         sessionStorage.setItem('admin', JSON.stringify({...loginAdmin, isGovUser: false}));

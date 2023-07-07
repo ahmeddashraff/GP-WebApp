@@ -8,6 +8,7 @@ import './Reports.css';
 import Modal from "./Modal";
 import axios from 'axios';
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { myGlobalVariable } from '../../globalVariables.js';
 
 // window.$ = window.jQuery = jQuery;
 
@@ -126,7 +127,7 @@ const Reports = (props) => {
         console.log(admin.token);
         setLoading(true);
         try{
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/reports/`, config);
+            var { data } = await axios.get(`http://${myGlobalVariable}/api/admins/reports/`, config);
             if (data.success === true) {
                 setReports(data.data.reports.reverse());
                 setLoading(false);

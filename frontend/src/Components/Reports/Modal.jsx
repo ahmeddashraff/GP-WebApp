@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { myGlobalVariable } from '../../globalVariables.js';
 
 
 const Modal = (props) => {
@@ -44,7 +45,7 @@ const Modal = (props) => {
         else {
             setIsDoneLoading(true);
         }
-        var { data } = await axios.put(`http://127.0.0.1:8000/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status, is_fake: is_fake }, config);
+        var { data } = await axios.put(`http://${myGlobalVariable}/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status, is_fake: is_fake }, config);
         if (data.success === true) {
             setIsDoneLoading(false);
             setIsInProgressLoading(false);
@@ -66,7 +67,7 @@ const Modal = (props) => {
 
     async function handleRejection(e) {
         setRejectLoading(true);
-        var { data } = await axios.delete(`http://127.0.0.1:8000/api/GovUsers/reports/delete/${props.modalContent.id}`, config);
+        var { data } = await axios.delete(`http://${myGlobalVariable}/api/GovUsers/reports/delete/${props.modalContent.id}`, config);
         if (data.success === true) {
             setRejectLoading(false);
             setIsDone(true);

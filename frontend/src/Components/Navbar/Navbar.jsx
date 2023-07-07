@@ -7,6 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './Navbar.css';
 import { NavLink, useHistory } from 'react-router-dom/cjs/react-router-dom';
 import axios from 'axios';
+import { myGlobalVariable } from '../../globalVariables.js';
 
 const Navbar = (props) => {
 
@@ -26,7 +27,7 @@ const Navbar = (props) => {
                     'Content-Type': 'application/json',
                 },
             };
-            let { data } = await axios.post(`http://127.0.0.1:8000/api/${admin.isGovUser ? 'GovUsers' : (admin.role == 'owner' ? 'owner':'admins')}/logout-current`, {}, config)
+            let { data } = await axios.post(`http://${myGlobalVariable}/api/${admin.isGovUser ? 'GovUsers' : (admin.role == 'owner' ? 'owner':'admins')}/logout-current`, {}, config)
             sessionStorage.removeItem('admin');
         }
     }

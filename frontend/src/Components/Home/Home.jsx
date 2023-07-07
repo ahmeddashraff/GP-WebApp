@@ -3,6 +3,7 @@ import './Home.css';
 import CountUp from 'react-countup';
 import axios from 'axios';
 import { NavLink, useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { myGlobalVariable } from '../../globalVariables.js';
 
 const Home = () => {
     let history = useHistory();
@@ -49,7 +50,7 @@ const Home = () => {
     async function getStatistics() {
         setLoading(true);
         try{
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/getStats`, config);
+            var { data } = await axios.get(`http://${myGlobalVariable}/api/admins/getStats`, config);
             if (data.success === true) {
                 console.log(data.data.statistics);
                 setStatistics(data.data.statistics);

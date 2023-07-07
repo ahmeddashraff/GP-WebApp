@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState, React } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import { myGlobalVariable } from '../../globalVariables.js';
 
 const GovUserControl = () => {
     const history = useHistory();
@@ -124,7 +125,7 @@ const GovUserControl = () => {
     async function getAdmins() {
         setAdminsLoading(true);
         try {
-            var { data } = await axios.get(`http://127.0.0.1:8000/api/admins/GovUsers/getAllGovernmentUsersInDepartment`, config);
+            var { data } = await axios.get(`http://${myGlobalVariable}/api/admins/GovUsers/getAllGovernmentUsersInDepartment`, config);
             if (data.success === true) {
                 console.log(data.data);
                 setAdmins(data.data.government_users.reverse())
@@ -142,7 +143,7 @@ const GovUserControl = () => {
         const bodyRequest = { status: status };
         setModalLoading(true);
         try {
-            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserStatus/${id}`, bodyRequest, config);
+            var { data } = await axios.put(`http://${myGlobalVariable}/api/admins/GovUsers/updateGovernmentUserStatus/${id}`, bodyRequest, config);
             if (data.success === true) {
                 const updatedModalContent = { ...modalContent };
                 updatedModalContent.status = status;
@@ -167,7 +168,7 @@ const GovUserControl = () => {
     async function deleteAdmin(id) {
         setModalLoading(true);
         try {
-            var { data } = await axios.delete(`http://127.0.0.1:8000/api/admins/GovUsers/delete/${id}`, config);
+            var { data } = await axios.delete(`http://${myGlobalVariable}/api/admins/GovUsers/delete/${id}`, config);
             if (data.success === true) {
                 const updatedAdmins = admins.filter((admin) => admin.id !== id);
                 setAdmins(updatedAdmins);
@@ -189,7 +190,7 @@ const GovUserControl = () => {
             console.log(addedAdmin);
             const { first_name, middle_name, last_name, ...addAdminRequest } = addedAdmin;
             console.log(addAdminRequest);
-            var { data } = await axios.post(`http://127.0.0.1:8000/api/admins/GovUsers/addGovernmentUser`, addAdminRequest, config);
+            var { data } = await axios.post(`http://${myGlobalVariable}/api/admins/GovUsers/addGovernmentUser`, addAdminRequest, config);
             console.log(data);
             if (data.success === true) {
                 const updatedAdmins = [...admins, data.data.government_user];
@@ -216,7 +217,7 @@ const GovUserControl = () => {
         const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
         setModalLoading(true);
         try {
-            var { data } = await axios.put(`http://127.0.0.1:8000/api/admins/GovUsers/updateGovernmentUserInfo/${modalContent.id}`, bodyRequest, config);
+            var { data } = await axios.put(`http://${myGlobalVariable}/api/admins/GovUsers/updateGovernmentUserInfo/${modalContent.id}`, bodyRequest, config);
             if (data.success === true) {
                 // const updatedModalContent = { ...modalContent };
                 // updatedModalContent.status = status;
