@@ -77,6 +77,20 @@ class GovernmentUserController extends Controller
         if (!$government_user) {
             return $this->error(['government_user' => 'No government user found by the given id'],"Not Found",404);
         }
+
+        if($request->status == 0)
+        {
+
+            $accessToken = PersonalAccessToken::where('tokenable_id', $id)
+            ->where('tokenable_type', get_class($government_user))
+            ->latest()
+            ->first();
+
+            if($accessToken)
+            {
+                $accessToken->delete();
+            }
+        }
         return $this->data(compact('government_user'));
     }
 
