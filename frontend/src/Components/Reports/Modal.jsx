@@ -20,6 +20,15 @@ const Modal = (props) => {
     const [rejectMode, setRejectMode] = useState(false);
     const [notApplicableMode, setNotApplicableMode] = useState(false);
 
+    axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && error.response.status === 401) {
+                history.push('/SignIn');
+            }
+            return Promise.reject(error);
+        }
+    );
     const config = {
         headers: {
             Authorization: props.token,
@@ -38,49 +47,59 @@ const Modal = (props) => {
 
     async function updateType(type) {
         setRejectLoading(true);
-        var { data } = await axios.put(`http://${myGlobalVariable}/api/GovUsers/reports/updateReportType/${props.modalContent.id}`, { type: type, }, config);
-        if (data.success === true) {
-            setRejectLoading(false);
-            setRejectMode(false);
+        try {
+            var { data } = await axios.put(`http://${myGlobalVariable}/api/GovUsers/reports/updateReportType/${props.modalContent.id}`, { type: type, }, config);
+            if (data.success === true) {
+                setRejectLoading(false);
+                setRejectMode(false);
+            }
+        } catch (error) {
+
         }
+
 
     }
 
     async function updateStatus(status, is_fake) {
 
-        if (status == '0') {
-            setIsInProgressLoading(true);
-        }
-        else if (status == '3') {
-            setRejectLoading(true);
-        }
-        else if(status == '2')
-        {
-            setIsInProgressLoading(true);
-        }
-        else {
-            setIsDoneLoading(true);
-        }
-        var { data } = await axios.put(`http://${myGlobalVariable}/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status, is_fake: is_fake }, config);
-        if (data.success === true) {
-            setIsDoneLoading(false);
-            setIsInProgressLoading(false);
-            setRejectLoading(false);
-            if (status == '1') {
-                setIsDone(true);
+
+        try {
+            if (status == '0') {
+                setIsInProgressLoading(true);
             }
             else if (status == '3') {
-                setIsRejected(true);
+                setRejectLoading(true);
             }
             else if (status == '2') {
-                setIsPending(true);
-                setIsWaiting(false);
+                setIsInProgressLoading(true);
             }
             else {
-                setIsDone(false);
-                setIsWaiting(false);
-                setIsPending(false);
+                setIsDoneLoading(true);
             }
+            var { data } = await axios.put(`http://${myGlobalVariable}/api/GovUsers/reports/updateStatus/${props.modalContent.id}`, { status: status, is_fake: is_fake }, config);
+            if (data.success === true) {
+                setIsDoneLoading(false);
+                setIsInProgressLoading(false);
+                setRejectLoading(false);
+                if (status == '1') {
+                    setIsDone(true);
+                }
+                else if (status == '3') {
+                    setIsRejected(true);
+                }
+                else if (status == '2') {
+                    setIsPending(true);
+                    setIsWaiting(false);
+                }
+                else {
+                    setIsDone(false);
+                    setIsWaiting(false);
+                    setIsPending(false);
+                }
+            }
+        }
+        catch (error) {
+
         }
     }
 

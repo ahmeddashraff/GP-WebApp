@@ -20,14 +20,4 @@ class IncidentController extends Controller
         }
         return $this->data(compact('incidents'));
     }
-
-    // public function getAllIncidentsByUserId(int $id)
-    // {
-    //     $incident = Incident::where('report_id', $id)->first();
-    //     if(!$incident)
-    //     {
-    //         return $this->error(['incident' =>'No incident found'],"Not Found",404);
-    //     }
-    //     return $this->data(compact('incident'));
-    // }
 }

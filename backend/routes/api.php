@@ -60,7 +60,7 @@ Route::prefix('admins')->group(function(){
             Route::post('/unrestrict/{id}','unrestrict');
             Route::post('/ban/{id}','ban');
             Route::post('/unban/{id}','unban');
-            Route::put('/addPoints/{id}', 'addPoints');
+            // Route::put('/addPoints/{id}', 'addPoints');
         });
         Route::prefix('GovUsers')->controller(GovernmentUserController::class)->group(function(){
             Route::post('/addGovernmentUser','addGovernmentUser');

@@ -38,12 +38,6 @@ class AdminController extends Controller
         return $this->success("Logout successfully from your current token");
     }
 
-    private function getToken(string $token)
-    {
-        $tokenArray = explode(' ',$token);
-        return explode('|',$tokenArray[1])[0];
-    }
-
     public function addAdmin(RegisterRequest $request)
     {
         if($request->role == 'manager' && $request->user("sanctum")->role !== "owner" )

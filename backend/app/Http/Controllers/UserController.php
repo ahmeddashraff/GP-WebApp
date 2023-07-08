@@ -26,9 +26,6 @@ class UserController extends Controller
 
     public function login(LoginRequest $request)
     {
-        // $user = User::where('email',$request->email)->where(function ($query) {
-        //     $query->where('status', 1);
-        // })->first();
         $user = User::where('email',$request->email)->first();
         if( !$user || ! Hash::check($request->password,$user->password) ){
             return $this->error(['email' => 'The provided credentials are incorrect.'],"Invalid Attempt",401);
@@ -39,7 +36,6 @@ class UserController extends Controller
         if( $user->status == 0){
             return $this->error(['user' => 'you are banned.'],"Invalid Attempt",401);
         }
-        // VerificationController::send
         $token = 'Bearer '.  $user->createToken("Ahmed's laptop" . '-' . "windows")->plainTextToken;
         $user->token = $token;
         return $this->data(compact('user'));
@@ -73,12 +69,6 @@ class UserController extends Controller
         return $this->success("Logout successfully from your current token");
     }
 
-
-    private function getToken(string $token)
-    {
-        $tokenArray = explode(' ',$token);
-        return explode('|',$tokenArray[1])[0];
-    }
 
     public function restrict(RestrictionRequest $request, int $id)
     {
@@ -205,17 +195,17 @@ class UserController extends Controller
         }
     }
 
-    public function addPoints(Request $request, int $id)
-    {
-        $user = User::find($id);
-        if(!$user){
-            return $this->error(['user' => "user not found"],"Not Found",404);
-        }
-        $user->points = $user->points + $request->points;
-        $user->update();
+    // public function addPoints(Request $request, int $id)
+    // {
+    //     $user = User::find($id);
+    //     if(!$user){
+    //         return $this->error(['user' => "user not found"],"Not Found",404);
+    //     }
+    //     $user->points = $user->points + $request->points;
+    //     $user->update();
 
-        return $this->success("points are added successfully",200);
-    }
+    //     return $this->success("points are added successfully",200);
+    // }
 
     public function update(UpdateUserRequest $request)
     {
