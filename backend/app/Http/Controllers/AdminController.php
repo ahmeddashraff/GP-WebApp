@@ -158,6 +158,14 @@ class AdminController extends Controller
         }
 
         $admin->delete();
+        $accessToken = PersonalAccessToken::where('tokenable_id', $id)
+        ->where('tokenable_type', get_class($admin))
+        ->latest()
+        ->first();
+        if($accessToken)
+        {
+            $accessToken->delete();
+        }
         return $this->success("Admin Deleted Successfully",200);
     }
 

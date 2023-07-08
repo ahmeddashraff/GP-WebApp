@@ -6,10 +6,13 @@ use App\Http\Requests\GovernmentUser\Auth\LoginRequest;
 use App\Http\Requests\GovernmentUser\Auth\RegisterRequest;
 use App\Http\Requests\GovernmentUser\UpdateGovernmentUserInfo;
 use App\Http\Requests\GovernmentUser\UpdateGovernmentUserStatusRequest;
+use App\Mail\AdminRestrictionMail;
 use App\Models\GovernmentUser;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class GovernmentUserController extends Controller
 {
@@ -69,6 +72,7 @@ class GovernmentUserController extends Controller
         }
         // Update the govenrment user status
         $government_user->status = $request->status;
+        Mail::to($government_user->email)->send(new AdminRestrictionMail($government_user->full_name, $request->status));
         $government_user->update();
         if (!$government_user) {
             return $this->error(['government_user' => 'No government user found by the given id'],"Not Found",404);
@@ -108,6 +112,14 @@ class GovernmentUserController extends Controller
             return $this->error(['government_user' => "government user not found"],"Not Found",404);
         }
         $government_user->delete();
+        $accessToken = PersonalAccessToken::where('tokenable_id', $id)
+        ->where('tokenable_type', get_class($government_user))
+        ->latest()
+        ->first();
+        if($accessToken)
+        {
+            $accessToken->delete();
+        }
         return $this->success("Government User Deleted Successfully",200);
     }
 }
