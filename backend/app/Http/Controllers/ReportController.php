@@ -47,7 +47,7 @@ class ReportController extends Controller
 
         $reportsCount = Report::whereIn("status", [0,1])->where('user_id', $report->user_id)->count();
         $countFives = (int)floor($reportsCount / 5) * 5;
-        $points =   10 * $countFives;
+        $points =   2 * $countFives;
 
         $user = User::findOrFail($report->user_id);
 
