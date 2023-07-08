@@ -101,7 +101,7 @@ class ReportController extends Controller
         $imageName = HasMedia::upload($decodedImageData,public_path('images\reports'));
 
         $status = 2;
-        if($request->confusion)
+        if($request->confusion == 'true')
         {
             $status = 4;
         }
