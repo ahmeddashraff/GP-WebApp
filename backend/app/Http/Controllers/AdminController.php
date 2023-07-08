@@ -71,7 +71,7 @@ class AdminController extends Controller
     {
         $user = $request->user('sanctum')->department_loc;
         $admins = Admin::where('department_loc', $user)
-        ->where('role', '!=', 'manager')
+        ->where('role', '!=', 'manager')->where('role', '!=', 'owner')
         ->get();
         if (!$admins) {
             return $this->error(['admins' => 'No admins found by the given location'],"Not Found",404);
