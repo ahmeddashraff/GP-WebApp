@@ -67,7 +67,7 @@ const Profile = () => {
                             <strong className="bold">
                                 National id:
                             </strong>
-                            <p className="mb-0">{admin.national_id}</p>
+                            <p className="mb-0">**********{admin.national_id.substring(10,14)}</p>
                         </div>
                     </div>
                 </div>

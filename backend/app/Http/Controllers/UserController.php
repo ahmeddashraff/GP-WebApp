@@ -46,7 +46,7 @@ class UserController extends Controller
 
         if($request->year_of_birth > Carbon::now()->subYears(16)->year)
         {
-            return $this->error(['age' => 'you must be 16 years old or older.'],"Invalid year of birth",400);
+            return $this->error(['age' => 'You must be 16 years old or older.'],"Invalid year of birth",400);
         }
         $user = User::create([
             'full_name'=>$request->full_name,

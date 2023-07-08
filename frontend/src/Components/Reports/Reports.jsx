@@ -124,15 +124,14 @@ const Reports = (props) => {
         };
         console.log(admin.token);
         setLoading(true);
-        try{
+        try {
             var { data } = await axios.get(`http://${myGlobalVariable}/api/admins/reports/`, config);
             if (data.success === true) {
                 setReports(data.data.reports.reverse());
                 setLoading(false);
             }
         }
-        catch(error)
-        {
+        catch (error) {
 
         }
 
@@ -152,7 +151,7 @@ const Reports = (props) => {
 
         setReports(sortedReports);
     };
-   
+
     useEffect(() => {
         performSearch();
     }, [searchQuery]);
@@ -198,52 +197,60 @@ const Reports = (props) => {
 
                                     </a>
                                     <div className="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                            <strong>Severity:</strong>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='1' />
-                                                <label for="severity" className="mb-0">Critical</label>
-                                            </div>
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='2' />
-                                                <label for="severity">Not critical</label>
-                                            </div>
+                                        <strong>Severity:</strong>
+                                        <div className="d-flex align-items-center mb-0">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='1' />
+                                            <label for="severity" className="mb-0">Critical</label>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='2' />
+                                            <label for="severity">Not critical</label>
+                                        </div>
 
 
-                                            <strong>Type:</strong>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='pothole' />
-                                                <label for="incident-type" className="mb-0">potholes</label>
-                                            </div>
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='flooding' />
-                                                <label for="incident-type">floodings</label>
-                                            </div>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='fire' />
-                                                <label for="incident-type" className="mb-0">fire and expl.</label>
-                                            </div>
+                                        <strong>Type:</strong>
+                                        <div className="d-flex align-items-center mb-0">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='pothole' />
+                                            <label for="incident-type" className="mb-0">potholes</label>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='flooding' />
+                                            <label for="incident-type">flooding</label>
+                                        </div>
+                                        <div className="d-flex align-items-center mb-0">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='fire' />
+                                            <label for="incident-type" className="mb-0">fire and expl.</label>
+                                        </div>
 
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='fallen tree' />
-                                                <label for="incident-type">fallen trees</label>
-                                            </div>
-                                            
-                                            <strong>Status:</strong>
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='2' />
-                                                <label for="status">pending</label>
-                                            </div>
-                                            <div className="d-flex align-items-center mb-0">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
-                                                <label for="status" className="mb-0">in progress</label>
-                                            </div>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="incident-type" value='fallen tree' />
+                                            <label for="incident-type">fallen trees</label>
+                                        </div>
 
-                                            <div className="d-flex align-items-center">
-                                                <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
-                                                <label for="status">done</label>
-                                            </div>
+                                        <strong>Status:</strong>
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='2' />
+                                            <label for="status">pending</label>
+                                        </div>
+                                        <div className="d-flex align-items-center mb-0">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
+                                            <label for="status" className="mb-0">in progress</label>
+                                        </div>
 
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
+                                            <label for="status">done</label>
+                                        </div>
 
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='3' />
+                                            <label for="status">Not Approved</label>
+                                        </div>
+
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='4' />
+                                            <label for="status">Waiting</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -301,13 +308,13 @@ const Reports = (props) => {
                                                                 minute: "2-digit",
                                                                 second: "2-digit",
                                                             })}</td>
-                                                            <td className="col-2">{report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 0 ?<p className="text-secondary mb-0"><strong>in progress</strong></p> : <p className="text-warning mb-0"><strong>pending</strong></p>)}</td>
-                                                            <td className="col-2">{report.severity == 1 ? <p className="text-danger mb-0"><strong>critical</strong></p> : (report.severity == 0 ?<p className="text-secondary mb-0"><strong>none</strong></p> : <p className="text-warning mb-0"><strong>not ctitical</strong></p>)}</td>
+                                                            <td className="col-2">{report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 0 ? <p className="text-secondary mb-0"><strong>in progress</strong></p> : <p className="text-warning mb-0"><strong>pending</strong></p>)}</td>
+                                                            <td className="col-2">{report.severity == 1 ? <p className="text-danger mb-0"><strong>critical</strong></p> : (report.severity == 0 ? <p className="text-secondary mb-0"><strong>none</strong></p> : <p className="text-warning mb-0"><strong>not ctitical</strong></p>)}</td>
 
                                                             <td className="col-1"><i onClick={() => handleModalOpen('modal' + report.id)} data-modal={"modal" + report.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
                                                         </tr>
                                                     ))}
-                                        </tbody>
+                                        </tbody> 
                                     }
 
                                 </table>

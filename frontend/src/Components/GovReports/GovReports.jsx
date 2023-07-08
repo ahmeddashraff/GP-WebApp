@@ -200,23 +200,33 @@ const GovReports = (props) => {
                                         </div>
                                         <div className="d-flex align-items-center">
                                             <input onChange={handleChange} type='checkbox' className="me-1" name="severity" value='2' />
-                                            <label for="severity">Not critical</label>
+                                            <label for="severity">Not Critical</label>
                                         </div>
 
                                         <strong>Status:</strong>
                                         <div className="d-flex align-items-center mb-0">
                                             <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='0' />
-                                            <label for="status" className="mb-0">in progress</label>
+                                            <label for="status" className="mb-0">In progress</label>
                                         </div>
 
                                         <div className="d-flex align-items-center">
                                             <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='1' />
-                                            <label for="status">done</label>
+                                            <label for="status">Done</label>
                                         </div>
 
                                         <div className="d-flex align-items-center">
                                             <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='2' />
-                                            <label for="status">pending</label>
+                                            <label for="status">Pending</label>
+                                        </div>
+
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='3' />
+                                            <label for="status">Not Approved</label>
+                                        </div>
+
+                                        <div className="d-flex align-items-center">
+                                            <input onChange={handleChange} type='checkbox' className="me-1" name="status" value='4' />
+                                            <label for="status">Waiting</label>
                                         </div>
                                     </div>
                                 </div>
@@ -229,11 +239,11 @@ const GovReports = (props) => {
                                     <thead>
                                         <tr>
                                             <th scope="col" className="col-2 table-header">ID</th>
-                                            <th scope="col" className="col-3 table-header">Incident Type</th>
+                                            <th scope="col" className="col-2 table-header">Incident Type</th>
                                             <th scope="col" className="col-3 table-header">Date</th>
                                             <th scope="col" className="col-2 table-header">Status</th>
-                                            {/* <th scope="col" className="col-2 table-header">Severity</th> */}
-                                            <th scope="col" className="col-2 table-header">Action</th>
+                                            <th scope="col" className="col-2 table-header">Severity</th>
+                                            <th scope="col" className="col-1 table-header">Action</th>
                                         </tr>
                                     </thead>
                                     {loading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
@@ -266,7 +276,7 @@ const GovReports = (props) => {
                                                     }).map(report => (
                                                         <tr key={report.id}>
                                                             <th scope="row" className="col-2">{report.id}</th>
-                                                            <td scope="row" className="col-3">{report.type}</td>
+                                                            <td scope="row" className="col-2">{report.type}</td>
                                                             <td className="col-3">{new Date(report.created_at).toLocaleString("en-US", {
                                                                 year: "numeric",
                                                                 month: "2-digit",
@@ -275,8 +285,9 @@ const GovReports = (props) => {
                                                                 minute: "2-digit",
                                                                 second: "2-digit",
                                                             })}</td>
-                                                            <td className="col-2">{report.status == 2 ? <p className="text-warning mb-0"><strong>pending</strong></p> :(report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 3 ?<p className="text-danger mb-0"><strong>Not Approved</strong></p>:(report.status == 4 ?<p className="text-danger mb-0"><strong>Waiting</strong></p> :<p className="text-secondary mb-0"><strong>in progress</strong></p>)))}</td>
-                                                            <td className="col-2"><i onClick={() => handleModalOpen('modal' + report.id)} data-modal={"modal" + report.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
+                                                            <td className="col-2">{report.status == 2 ? <p className="text-warning mb-0"><strong>pending</strong></p> :(report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 3 ?<p className="text-danger mb-0"><strong>Not Approved</strong></p>:(report.status == 4 ?<p className="text-danger mb-0"><strong>Waiting</strong></p> :<p className="text-secondary mb-0"><strong>In progress</strong></p>)))}</td>
+                                                            <td className="col-2">{report.severity == 1 ? <p className="text-danger mb-0"><strong>critical</strong></p> : (report.severity == 0 ? <p className="text-secondary mb-0"><strong>none</strong></p> : <p className="text-warning mb-0"><strong>not ctitical</strong></p>)}</td>
+                                                            <td className="col-1"><i onClick={() => handleModalOpen('modal' + report.id)} data-modal={"modal" + report.id} className="fa-solid fa-circle-info" style={{ color: '#9aaac6', fontSize: 20 }}></i></td>
                                                         </tr>
                                                     ))}
                                         </tbody>

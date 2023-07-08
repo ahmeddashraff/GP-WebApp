@@ -166,9 +166,14 @@ class AdminController extends Controller
         $totalReports = Report::count();
         $inProgressReports = Report::where('status', 'in_progress')->count();
 
-        $potholesPercentage = (Report::where('type', 'pothole')->count() / $totalReports) * 100;
-        $firePercentage = (Report::where('type', 'fire')->count() / $totalReports) * 100;
-        $floodingPercentage = (Report::where('type', 'flooding')->count() / $totalReports) * 100 ;
+        $potholesPercentage = $firePercentage = $floodingPercentage = 0;
+        if($totalReports !== 0)
+        {
+            $potholesPercentage = (Report::where('type', 'pothole')->count() / $totalReports) * 100;
+            $firePercentage = (Report::where('type', 'fire')->count() / $totalReports) * 100;
+            $floodingPercentage = (Report::where('type', 'flooding')->count() / $totalReports) * 100 ;
+        }
+
 
         $registeredUsers = User::count();
 
