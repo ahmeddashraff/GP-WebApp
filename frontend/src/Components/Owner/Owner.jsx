@@ -43,6 +43,7 @@ const Owner = () => {
         national_id: ' ',
         role: 'manager',
         password_confirmation: '',
+        department_loc: ' '
     });
 
 
