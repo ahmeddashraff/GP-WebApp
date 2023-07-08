@@ -64,6 +64,7 @@ const GovUserControl = () => {
         const query = searchQuery.toLowerCase();
         const results = admins && admins.filter(
             (admin) =>
+                admin.id.toString().includes(query)||
                 admin.full_name.toLowerCase().includes(query) ||
                 admin.phone_number.toLowerCase().includes(query) ||
                 admin.email.toLowerCase().includes(query) ||
@@ -284,7 +285,7 @@ const GovUserControl = () => {
                                     </thead>
                                     {adminsLoading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
                                         <tbody>
-                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).map(admin => (
+                                            {admins && (searchResults == null || searchResults.length == 0 || searchQuery == '' || searchQuery == null ? admins : searchResults).map(admin => (
                                                 <>
                                                     <tr key={admin.id}>
                                                         <th scope="row" className="col-1">{admin.id}</th>

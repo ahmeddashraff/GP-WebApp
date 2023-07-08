@@ -52,6 +52,7 @@ const Owner = () => {
         const query = searchQuery.toLowerCase();
         const results = admins && admins.filter(
             (admin) =>
+                admin.id.toString().includes(query)||
                 admin.full_name.toLowerCase().includes(query) ||
                 admin.phone_number.toLowerCase().includes(query) ||
                 admin.email.toLowerCase().includes(query) ||
@@ -61,7 +62,6 @@ const Owner = () => {
     };
 
     const handleSortChange = (event) => {
-        // console.log(searchQuery.)
         const sortOption = event.target.value;
         let sortedAdmins = [...admins];
         console.log(sortOption);
@@ -78,7 +78,6 @@ const Owner = () => {
         const name = e.target.name;
         const value = e.target.value;
 
-        // Create a copy of addedAdmin
         let updatedAddedAdmin = { ...addedAdmin };
 
         updatedAddedAdmin[name] = value;
@@ -148,7 +147,7 @@ const Owner = () => {
                 setAdmins(updatedAdmins);
                 setAddAdminLoading(false);
                 setErrorList(null);
-                // alert("admin added successfully");
+                setSuccessMessage(true);
             }
             else {
                 setSuccessMessage(false);
@@ -162,24 +161,6 @@ const Owner = () => {
         }
     }
 
-    async function saveAdminInfo(modalContent) {
-        console.log(modalContent);
-        const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
-        setModalLoading(true);
-        var { data } = await axios.put(`http://${myGlobalVariable}/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
-        if (data.success === true) {
-            // const updatedModalContent = { ...modalContent };
-            // updatedModalContent.status = status;
-            const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
-            if (adminIndex !== -1) {
-                const updatedAdmins = [...admins];
-                updatedAdmins[adminIndex] = data.data.admin;
-                setAdmins(updatedAdmins);
-            }
-            setModalContent(modalContent);
-            setModalLoading(false);
-        }
-    }
 
     useEffect(() => {
         performSearch();
@@ -227,7 +208,7 @@ const Owner = () => {
                                     </thead>
                                     {adminsLoading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
                                         <tbody>
-                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).map(admin => (
+                                            {admins && (searchResults == null || searchResults.length == 0 || searchQuery == '' || searchQuery == null ? admins : searchResults).map(admin => (
                                                 <>
                                                     <tr key={admin.id}>
                                                         <th scope="row" className="col-1">{admin.id}</th>

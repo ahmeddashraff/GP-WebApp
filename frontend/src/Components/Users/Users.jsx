@@ -125,31 +125,7 @@ const Users = () => {
                                 <option>oldest to newest</option>
                             </select>
 
-                            {/* <div className="nav-item dropdown ms-2">
-                                <a
-                                    className="nav-link dropdown-toggle"
-                                    href="#"
-                                    id="navbarDropdownMenuLink"
-                                    role="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                >
-                                    <strong>Filter By</strong>
 
-                                </a>
-                                <div className="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                    <strong>Gender:</strong>
-                                    <div className="d-flex align-items-center mb-0">
-                                        <input onChange={handleChange} type='checkbox' className="me-1" name="gender" value='male' />
-                                        <label for="gender" className="mb-0">male</label>
-                                    </div>
-                                    <div className="d-flex align-items-center">
-                                        <input onChange={handleChange} type='checkbox' className="me-1" name="gender" value='female' />
-                                        <label for="gender">female</label>
-                                    </div>
-                                </div>
-                            </div> */}
                         </div>
                     </div>
                     <div className="rounded shadow bg-white">

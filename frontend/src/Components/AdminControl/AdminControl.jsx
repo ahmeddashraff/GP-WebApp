@@ -17,6 +17,7 @@ const AdminControl = () => {
     let [adminsLoading, setAdminsLoading] = useState(false);
     let [addAdminLoading, setAddAdminLoading] = useState(false);
 
+    let [modalErrorList, setModalErrorList] = useState(null);
     let [errorList, setErrorList] = useState(null);
     let admin = JSON.parse(sessionStorage.getItem('admin'));
 
@@ -66,6 +67,7 @@ const AdminControl = () => {
         const query = searchQuery.toLowerCase();
         const results = admins && admins.filter(
             (admin) =>
+                admin.id.toString().includes(query)||
                 admin.full_name.toLowerCase().includes(query) ||
                 admin.phone_number.toLowerCase().includes(query) ||
                 admin.email.toLowerCase().includes(query) ||
@@ -121,6 +123,8 @@ const AdminControl = () => {
         if (event.target.className === "modal" || event.target.className === "close") {
             setDisplayModal(false);
             setActiveModalId(null);
+            setModalErrorList(null);
+            setEditMode(false);
         }
     };
 
@@ -176,8 +180,7 @@ const AdminControl = () => {
                 setActiveModalId(null);
             }
 
-        }catch(error)
-        {
+        } catch (error) {
 
         }
 
@@ -197,6 +200,7 @@ const AdminControl = () => {
                 setAdmins(updatedAdmins);
                 setAddAdminLoading(false);
                 setErrorList(null);
+                setSuccessMessage(true);
             }
             else {
                 setSuccessMessage(false);
@@ -214,11 +218,10 @@ const AdminControl = () => {
         console.log(modalContent);
         const bodyRequest = { phone_number: modalContent.phone_number, email: modalContent.email, password: modalContent.password };
         setModalLoading(true);
-        try{
+        try {
             var { data } = await axios.put(`http://${myGlobalVariable}/api/admins/updateAdminInfo/${modalContent.id}`, bodyRequest, config);
             if (data.success === true) {
-                // const updatedModalContent = { ...modalContent };
-                // updatedModalContent.status = status;
+
                 const adminIndex = admins.findIndex(admin => admin.id === modalContent.id);
                 if (adminIndex !== -1) {
                     const updatedAdmins = [...admins];
@@ -227,13 +230,14 @@ const AdminControl = () => {
                 }
                 setModalContent(modalContent);
                 setModalLoading(false);
+                setEditMode(false);
+                setModalErrorList(null);
             }
         }
-        catch(error)
-        {
-
+        catch (error) {
+            setModalErrorList(error.response.data.errors);
+            setModalLoading(false);
         }
-
     }
 
     useEffect(() => {
@@ -282,7 +286,7 @@ const AdminControl = () => {
                                     </thead>
                                     {adminsLoading ? <i className='fas fa-spinner fa-spin fa-2x mt-3'></i> :
                                         <tbody>
-                                            {admins && (searchResults == null || searchResults.length == 0 ? admins : searchResults).map(admin => (
+                                            {admins && (searchResults == null || searchResults.length == 0 || searchQuery == '' || searchQuery == null ? admins : searchResults).map(admin => (
                                                 <>
                                                     <tr key={admin.id}>
                                                         <th scope="row" className="col-1">{admin.id}</th>
@@ -433,7 +437,9 @@ const AdminControl = () => {
                                                                             })
                                                                         }
                                                                     />
+                                                                    {modalErrorList && (modalErrorList.phone_number && <div className="error-alert">{modalErrorList.phone_number[0]}</div>)}
                                                                 </td>
+
                                                             </tr>
                                                             <tr>
                                                                 <th width="30%">Email</th>
@@ -450,6 +456,8 @@ const AdminControl = () => {
                                                                             })
                                                                         }
                                                                     />
+                                                                    {modalErrorList && (modalErrorList.email && <div className="error-alert">{modalErrorList.email[0]}</div>)}
+
                                                                 </td>
                                                             </tr>
                                                         </>
@@ -501,6 +509,8 @@ const AdminControl = () => {
                                                                     }
                                                                     }
                                                                 />
+                                                                {modalErrorList && (modalErrorList.password && <div className="error-alert">{modalErrorList.password[0]}</div>)}
+
                                                             </td>
                                                         </tr>
                                                     }
@@ -544,6 +554,7 @@ const AdminControl = () => {
                                                                             name="saveBtn"
                                                                             className="btn btn-secondary w-50 me-2"
                                                                             onClick={() => {
+                                                                                setModalErrorList(null);
                                                                                 setEditMode(false);
                                                                             }}
                                                                         >
@@ -555,7 +566,6 @@ const AdminControl = () => {
                                                                             onClick={() => {
                                                                                 // Save the updated admin info
                                                                                 saveAdminInfo(modalContent);
-                                                                                setEditMode(false);
                                                                             }}
                                                                         >
                                                                             Save
