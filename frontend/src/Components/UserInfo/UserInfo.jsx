@@ -344,8 +344,8 @@ const UserInfo = (props) => {
                                                 alt="Card image cap" />
                                             <div className="card-body">
                                                 <h5 className="card-title">Report #{report.report_id}</h5>
-                                                <p className="m-0"><strong>Status: </strong><span className="">{report.status == 0 ? 'In progress' : 'done'}</span></p>
-                                                <p className="m-0"><strong>Severity: </strong><span>{report.severity}</span></p>
+                                                <p className="m-0"><strong>Status: </strong><span className="">{report.status == 1 ? <p className="text-success mb-0"><strong>done</strong></p> : (report.status == 0 ? <p className="text-secondary mb-0"><strong>in progress</strong></p> :(report.status == 4 ? <p className="text-secondary mb-0"><strong>waiting</strong></p>: <p className="text-warning mb-0"><strong>pending</strong></p>))}</span></p>
+                                                <p className="m-0"><strong>Severity: </strong><span>{report.severity == 1 ? <p className="text-danger mb-0"><strong>critical</strong></p> : (report.severity == 0 ? <p className="text-secondary mb-0"><strong>none</strong></p> : <p className="text-warning mb-0"><strong>not ctitical</strong></p>)}</span></p>
                                                 <p className="m-0"><strong>Incident type:</strong> {report.type}</p>
                                                 <p className="m-0"><strong>User Description:</strong></p>
                                                 <p> {report.description}</p>
