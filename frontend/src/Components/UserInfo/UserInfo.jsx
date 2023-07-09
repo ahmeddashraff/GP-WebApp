@@ -289,7 +289,7 @@ const UserInfo = (props) => {
                                         </div>
 
                                     </div>
-                                    <div className="col-lg-8">
+                                    <div className="col-lg-8 my-auto">
                                         <div className="card shadow-sm">
                                             <div className="card-header bg-transparent border-0">
                                                 <h3 className="mb-0"><i className="far fa-clone pr-1"></i>General Information</h3>
@@ -320,11 +320,6 @@ const UserInfo = (props) => {
                                                     </tr>
                                                 </table>
                                             </div>
-                                        </div>
-                                        <div style={{ height: 18 }}></div>
-                                        <div className="d-flex align-items-center">
-                                            <input onChange={handlePointsChange} placeholder="Enter points" type="number" className="p-1" name="points" id="points" />
-                                            <button type="submit" className="btn btn-dark ml-1 ms-2 p-1 points-btn" onClick={handlePoints}>Add points</button>
                                         </div>
                                     </div>
 

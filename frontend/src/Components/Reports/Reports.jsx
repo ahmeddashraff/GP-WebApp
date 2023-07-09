@@ -87,7 +87,7 @@ const Reports = (props) => {
         const query = searchQuery.toLowerCase();
         const results = reports && reports.filter(
             (report) =>
-                report.id.toString().includes(query)
+                report.report_id.toString().includes(query)
         );
         setSearchResults(results);
     };

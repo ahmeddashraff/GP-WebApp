@@ -148,7 +148,7 @@ const Modal = (props) => {
                             </div>
                             <div className="d-flex justify-content-between align-items-center">
                                 <div className="info text-start pt-2">
-                                    <p className="mb-1"><strong>Report ID:</strong> {props.modalContent.id}</p>
+                                    <p className="mb-1"><strong>Report ID:</strong> {props.modalContent.report_id}</p>
                                     <p className="mb-1"><strong>User ID:</strong> {props.modalContent.user_id}</p>
                                     <p className="mb-1"><strong>Date:</strong> {new Date(props.modalContent.created_at).toLocaleString("en-US", {
                                         year: "numeric",
