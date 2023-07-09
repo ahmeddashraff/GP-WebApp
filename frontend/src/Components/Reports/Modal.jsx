@@ -188,10 +188,10 @@ const Modal = (props) => {
                                                             <div className='d-flex w-100 align-items-center justify-content-start mt-1 flex-column'>
                                                                 <strong>What is the correct type of this incident?</strong>
                                                                 <div className='d-flex justify-content-center'>
-                                                                    <button className="btn btn-secondary  me-1" value='fire' onClick={(e) => updateType(e.target.value)}>Fire</button>
-                                                                    <button className="btn btn-secondary  me-1" value='fallen tree' onClick={(e) => updateType(e.target.value)}>Fallen tree</button>
-                                                                    <button className="btn btn-secondary  me-1" value='flooding' onClick={(e) => updateType(e.target.value)}>Flooding</button>
-                                                                    <button className="btn btn-secondary  me-1" value='pothole' onClick={(e) => updateType(e.target.value)}>Pothole</button>
+                                                                    <button className="btn btn-secondary  me-1"  value='fire' onClick={(e) => {updateType(e.target.value); setIsRejected(true)}}>Fire</button>
+                                                                    <button className="btn btn-secondary  me-1"  value='fallen tree' onClick={(e) => {updateType(e.target.value); setIsRejected(true)}}>Fallen tree</button>
+                                                                    <button className="btn btn-secondary  me-1"  value='flooding' onClick={(e) => {updateType(e.target.value); setIsRejected(true)}}>Flooding</button>
+                                                                    <button className="btn btn-secondary  me-1"  value='pothole' onClick={(e) => {updateType(e.target.value); setIsRejected(true)}}>Pothole</button>
 
                                                                 </div>
 
@@ -206,8 +206,7 @@ const Modal = (props) => {
                                                 </button>)))
 
                                         :
-                                        <button className="btn btn-secondary mt-2" onClick={goToUserProfile}>View User Profile</button>}
-
+                                        <button className="btn btn-secondary mt-2" onClick={goToUserProfile}>View User Profile</button>} 
                                 </div>
                                 <img className="shadow mt-4" src={props.modalContent.image} alt="" width={'50%'} height={270} />
                             </div>

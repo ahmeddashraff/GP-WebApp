@@ -106,7 +106,8 @@ const Reports = (props) => {
     };
 
     const handleModalClose = (event) => {
-        if (event.target.className === "modal" || event.target.className === "close") {
+        console.log("hereeeeeeeeee", event.target.name);
+        if (event.target.className === "modal" || event.target.className === "close"||event.target.className === "btn btn-secondary me-1 close") {
             setDisplayModal(false);
             setActiveModalId(null);
         }
